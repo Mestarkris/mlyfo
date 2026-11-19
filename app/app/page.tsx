@@ -100,7 +100,8 @@ export default async function Overview({ searchParams }: { searchParams: Promise
               <div className="li" key={a.id}>
                 {a.status === "blocked" ? <span className="ava warn-ava"><Icon name="shield" /></span> : <Avatar name={a.other.replace(/^@/, "")} />}
                 <div>{a.status === "blocked" ? `Stopped by Shield: ${a.other}` : a.kind === "in" ? `${a.other} paid you` : `To ${a.other}`}
-                  <small>{a.status === "needs_confirmation" ? "Waiting for confirmation" : a.note || new Date(a.created_at + "Z").toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</small></div>
+                  <small>{a.status === "needs_confirmation" ? "Waiting for confirmation" : a.note || new Date(a.created_at + "Z").toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    {a.receipt_id && <> · <a className="rcpt-inline" href={`/r/${a.receipt_id}`}>Receipt</a></>}</small></div>
                 <span className="amt num" style={{ color: a.status === "blocked" ? "var(--amber)" : a.kind === "in" ? "var(--teal-ink)" : undefined }}>
                   {a.kind === "in" ? "+" : a.status === "sent" ? "−" : ""}{fmt(a.amount_cents)}</span>
               </div>

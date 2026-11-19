@@ -978,3 +978,54 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em}
 .phone.dark .save-contact input:focus{outline:none;border-color:#7D89FF}
 .chatlist-add{display:block;margin:12px 18px 0;padding:10px 14px;border-radius:12px;background:rgba(111,123,255,.14);color:#C3C8FF;font-size:14px;font-weight:500;text-align:center}
 .chatlist-add:hover{background:rgba(111,123,255,.22)}
+
+/* ================= Receipts ================= */
+/* undo: a bar that drains over the 5 seconds */
+.phone.dark .undo-bar{height:3px;border-radius:2px;background:#3A3A3F;margin-top:10px;overflow:hidden}
+.phone.dark .undo-bar i{display:block;height:100%;background:#7D89FF;transform-origin:left;animation:drain linear forwards}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.phone.dark .rcpt-id{margin-left:auto;font-size:11px;color:#A1A1A8}
+.phone.dark .rcpt-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.phone.dark .rcpt-link{font-size:12.5px;font-weight:500;color:#AEB5FF;white-space:nowrap}
+.phone.dark .rcpt-link:hover{text-decoration:underline}
+
+/* Solana record line */
+.chain{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--slate);min-width:0}
+.chain.compact{font-size:12px;color:#A1A1A8}
+.chain.recorded{color:#7FD4B8}
+.chain.recorded:hover span{text-decoration:underline}
+.chain .icon{width:14px;height:14px}
+.chain b{font-weight:500}
+.chain .spin{width:12px;height:12px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* payment bubble in the chat */
+.phone.dark .paybubble{display:grid;gap:2px;min-width:170px;padding:10px 14px;border-radius:18px 18px 6px 18px;
+  background:linear-gradient(160deg,#5262FF,#3343E6);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.phone.dark .pb-amt{font-size:22px;font-weight:500;letter-spacing:-.02em}
+.phone.dark .pb-state{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#DDE1FF}
+.phone.dark .pb-state .tick{color:#fff;width:15px;height:12px}
+.phone.dark .pb-meta{font-size:12px;color:#C9CEFF}
+.phone.dark .pb-link{font-size:12px;font-weight:500;color:#fff;text-decoration:underline;margin-top:4px}
+
+/* public receipt page */
+.receipt-page{display:grid;justify-items:center;gap:24px;width:min(460px,100%)}
+.receipt-page>.logo{justify-self:start}
+.slip-wrap.big{width:100%;max-width:440px}
+.slip-wrap.big .slip{padding:28px 28px 40px}
+.rcpt-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500;color:#5E554A}
+.rcpt-top .tick{color:var(--teal);width:24px;height:20px}
+.rcpt-amt{font-size:44px;font-weight:500;letter-spacing:-.03em;margin-top:12px;color:#1F1B16}
+.rcpt-sub{font-family:var(--mono);font-size:12px;color:#7B7266}
+.rcpt-rows{margin:20px 0 0;padding:16px 0 0;border-top:1px dashed rgba(42,38,32,.28);display:grid;gap:10px}
+.rcpt-rows>div{display:grid;grid-template-columns:72px 1fr;gap:12px;font-size:14px;color:#2A2620}
+.rcpt-rows dt{color:#7B7266}
+.rcpt-rows dd{margin:0;min-width:0;word-break:break-all}
+.rcpt-rows dd span{color:#7B7266}
+.rcpt-rows .small{font-size:11.5px}
+.rcpt-foot{display:flex;gap:8px;align-items:center;margin-top:20px;padding-top:14px;border-top:1px dashed rgba(42,38,32,.28);font-size:12.5px;color:#5E554A}
+.rcpt-foot .icon{width:16px;height:16px;color:#2F3FD9}
+.receipt-page .chain{padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.rcpt-inline{color:var(--teal-ink)}
+.rcpt-inline:hover{text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.phone.dark .undo-bar i,.chain .spin{animation:none}}

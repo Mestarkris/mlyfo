@@ -18,7 +18,7 @@ export function FaucetButton() {
 }
 
 /** Password re-entry for payments that went over a spend limit. */
-export function ConfirmPayment({ id, amount, to, reason, onDone }: { id: number; amount: number; to: string; reason: string; onDone?: (ok: boolean) => void }) {
+export function ConfirmPayment({ id, amount, to, reason, onDone }: { id: number; amount: number; to: string; reason: string; onDone?: (data: { receipt_id?: string; to_address?: string; delivered_to?: string | null }) => void }) {
   const router = useRouter(); const [pw, setPw] = useState(""); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
   return (
     <form data-testid="confirm-payment" onSubmit={async (e) => {
@@ -26,7 +26,7 @@ export function ConfirmPayment({ id, amount, to, reason, onDone }: { id: number;
       const r = await api("/api/pay/confirm", "POST", { paymentId: id, password: pw });
       setBusy(false);
       if (!r.ok) { setErr(r.data.error ?? r.data.reasons?.[0] ?? "Couldn’t confirm."); return; }
-      onDone?.(true); router.refresh();
+      onDone?.(r.data); router.refresh();
     }}>
       <div className="mini warn" style={{ marginTop: 10 }}><Icon name="alert" /><span><b>Confirm {money(amount)} to {to}.</b> {reason}</span></div>
       <div className="row-form">

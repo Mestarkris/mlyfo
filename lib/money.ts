@@ -61,7 +61,20 @@ export type SendResult = {
   to?: string;
   /** When a name could mean two people, the options to pick from. */
   choices?: Choice[];
+  /** Set once money has moved. */
+  receipt_id?: string;
+  to_address?: string;
+  /** The recipient's Mlyfo handle when they have an account, so the app can say "Delivered to @ada". */
+  delivered_to?: string | null;
 };
+
+/** Short, readable, unguessable receipt ID, e.g. MLY-7F3K-92QD. */
+export function receiptId() {
+  const A = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const b = crypto.getRandomValues(new Uint8Array(8));
+  const s = [...b].map((x) => A[x % A.length]).join("");
+  return `MLY-${s.slice(0, 4)}-${s.slice(4)}`;
+}
 
 /**
  * The single money path. Shield runs first, then spend limits.
@@ -118,9 +131,12 @@ async function settle(userId: number, paymentId: number, findings: Finding[]): P
     }
     await t.run("UPDATE users SET balance_cents = balance_cents - ? WHERE id = ?", p.amount_cents, userId);
     await t.run("UPDATE users SET balance_cents = balance_cents + ? WHERE address = ?", p.amount_cents, p.to_address);
-    await t.run("UPDATE payments SET status='sent', created_at = datetime('now') WHERE id = ?", p.id);
+    const rid = receiptId();
+    await t.run("UPDATE payments SET status='sent', created_at = datetime('now'), receipt_id = ? WHERE id = ?", rid, p.id);
+    const to = await t.get<{ handle: string }>("SELECT handle FROM users WHERE address = ?", p.to_address);
     if (p.split_share_id) await t.run("UPDATE split_shares SET paid_by = ?, paid_at = datetime('now') WHERE id = ? AND paid_at IS NULL", userId, p.split_share_id);
-    return { status: "sent" as const, paymentId: p.id, findings, reasons: [], balance_cents: u.balance_cents - p.amount_cents };
+    return { status: "sent" as const, paymentId: p.id, findings, reasons: [], balance_cents: u.balance_cents - p.amount_cents,
+      receipt_id: rid, to_address: p.to_address, delivered_to: to?.handle ?? null };
   });
 }
 

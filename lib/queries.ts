@@ -1,11 +1,11 @@
 import { q } from "./db";
 import { splitDetail } from "./money";
 
-export type Activity = { id: number; kind: "out" | "in"; amount_cents: number; status: string; reason: string; note: string; created_at: string; other: string; emoji: string };
+export type Activity = { id: number; kind: "out" | "in"; amount_cents: number; status: string; reason: string; note: string; created_at: string; other: string; emoji: string; receipt_id: string | null };
 
 export async function activity(userId: number, limit = 8): Promise<Activity[]> {
   return q.all<Activity>(`
-    SELECT p.id, CASE WHEN p.from_user = ? THEN 'out' ELSE 'in' END AS kind, p.amount_cents, p.status, p.reason, p.note, p.created_at,
+    SELECT p.id, CASE WHEN p.from_user = ? THEN 'out' ELSE 'in' END AS kind, p.amount_cents, p.status, p.reason, p.note, p.created_at, p.receipt_id,
       CASE WHEN p.from_user = ?
         THEN COALESCE((SELECT label FROM contacts c WHERE c.user_id = ? AND c.address = p.to_address), (SELECT '@'||handle FROM users WHERE id = p.to_user), substr(p.to_address,1,4)||'…'||substr(p.to_address,-4))
         ELSE (SELECT '@'||handle FROM users WHERE id = p.from_user) END AS other,

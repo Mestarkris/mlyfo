@@ -1,6 +1,8 @@
 "use client";
 import Avatar from "./Avatar";
 import Link from "next/link";
+import { ChainStatus, CountUp } from "./ReceiptTools";
+import { Tick } from "./Receipt";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseIntent, type Intent } from "@/lib/intent";
@@ -10,9 +12,12 @@ import { money, ConfirmPayment } from "./Widgets";
 /** A chat. Demo friends come with a scripted first message; your saved people start empty. */
 type Friend = { key: string; handle: string; name: string; opener: string; payTo: string; splitName: string; saved?: boolean };
 type Choice = { to: string; label: string; detail: string };
-type Msg = { from: "me" | "them"; text: string; link?: string };
+type Paid = { cents: number; receiptId?: string; delivered?: string };
+type Msg = { from: "me" | "them"; text: string; link?: string; paid?: Paid };
+type Receipt = { receiptId?: string; toAddress?: string; deliveredTo?: string | null };
 type Result =
-  | { kind: "sent"; text: string }
+  | ({ kind: "sent"; text: string; cents: number; to: string } & Receipt)
+  | { kind: "sending"; cents: number; to: string; left: number }
   | { kind: "confirm"; id: number; amount: number; to: string; reason: string }
   | { kind: "blocked"; reasons: string[]; typed?: string; twin?: string | null; choices?: Choice[]; amount?: number; note?: string }
   | { kind: "split"; title: string; shares: { label: string; amount_cents: number; token: string; is_owner: number }[] }
@@ -82,13 +87,39 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
   const push = (m: Msg) => setThreads((t) => ({ ...t, [friend.key]: [...(t[friend.key] ?? []), m] }));
   const press = (c: string) => { setDown(c); setTimeout(() => setDown(null), 110); };
 
+  /** Money moved: turn the card into a receipt and drop a payment bubble into the chat. */
+  function paidOut(cents: number, to: string, d: { receipt_id?: string; to_address?: string; delivered_to?: string | null }) {
+    const delivered = d.delivered_to ? `Delivered to @${d.delivered_to}` : d.to_address ? `Sent to wallet ${d.to_address.slice(0, 4)}…${d.to_address.slice(-4)}` : undefined;
+    setResult({ kind: "sent", text: `Sent ${money(cents)} to ${to}.`, cents, to, receiptId: d.receipt_id, toAddress: d.to_address, deliveredTo: d.delivered_to });
+    push({ from: "me", text: `Sent you ${money(cents)} ✓`, paid: { cents, receiptId: d.receipt_id, delivered } });
+    setText("");
+  }
+
+  // A 5-second window to take a one-tap payment back before any money moves.
+  const undoRef = useRef<{ timer: ReturnType<typeof setInterval>; cancel: () => void } | null>(null);
+  function undo() { undoRef.current?.cancel(); }
+  function countdown(cents: number, to: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      let left = 5;
+      setResult({ kind: "sending", cents, to, left });
+      const timer = setInterval(() => {
+        left -= 1;
+        if (left <= 0) { clearInterval(timer); undoRef.current = null; resolve(true); }
+        else setResult({ kind: "sending", cents, to, left });
+      }, 1000);
+      undoRef.current = { timer, cancel: () => { clearInterval(timer); undoRef.current = null; setResult(null); resolve(false); } };
+    });
+  }
+  useEffect(() => () => { if (undoRef.current) clearInterval(undoRef.current.timer); }, []);
+
   /** Send money. "target" is "@handle", a saved contact's name or an address. */
   async function pay(target: string, amountCents: number, note: string) {
     let to = target;
+    if (!(await countdown(amountCents, target.length > 20 ? target.slice(0, 4) + "…" + target.slice(-4) : target))) return;
     const r = await api("/api/pay", "POST", { to, amount: amountCents / 100, note });
     const d = r.data;
     if (d.to) to = d.to;
-    if (d.status === "sent") { setResult({ kind: "sent", text: `Sent ${money(amountCents)} to ${to}.` }); push({ from: "me", text: `Sent you ${money(amountCents)} ✓` }); setText(""); }
+    if (d.status === "sent") paidOut(amountCents, to, d);
     else if (d.status === "needs_confirmation") setResult({ kind: "confirm", id: d.paymentId, amount: amountCents, to, reason: d.reasons.join(" ") });
     else {
       let twin: string | null = null; let typed: string | undefined;
@@ -152,9 +183,16 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
   const card = (() => {
     if (result) {
       switch (result.kind) {
-        case "sent": return (<><div className="smart-top"><span className="chip">Paid</span>Shield checked</div><div className="smart-title" data-testid="pad-sent">{result.text}</div></>);
+        case "sending": return (<><div className="smart-top"><span className="chip grey">Sending</span>Money moves in {result.left}s</div>
+          <div className="smart-title">Sending {money(result.cents)} to {result.to}</div>
+          <div className="undo-bar" aria-hidden><i style={{ animationDuration: "5s" }} /></div>
+          <div className="smart-actions"><button className="btn btn-ghost" onClick={undo} data-testid="undo">Undo</button></div></>);
+        case "sent": return (<><div className="smart-top"><span className="chip">Paid</span>Shield checked{result.receiptId && <span className="rcpt-id num">{result.receiptId}</span>}</div>
+          <div className="smart-title" data-testid="pad-sent">{result.text}</div>
+          <div className="smart-sub">{result.deliveredTo ? <>Delivered to @{result.deliveredTo}. It’s in their balance now</> : result.toAddress ? <>Sent to wallet <span className="num">{result.toAddress.slice(0, 4)}…{result.toAddress.slice(-4)}</span></> : null}</div>
+          {result.receiptId && <div className="rcpt-actions"><ChainStatus id={result.receiptId} compact /><a className="rcpt-link" href={`/r/${result.receiptId}`} target="_blank" rel="noreferrer">View receipt</a></div>}</>);
         case "confirm": return (<><div className="smart-top">{result.reason.includes("changed their wallet") ? <span className="chip warn">Shield</span> : <span className="chip grey">Limit</span>}Needs your confirmation</div>
-          <ConfirmPayment id={result.id} amount={result.amount} to={result.to} reason={result.reason} onDone={() => { setResult({ kind: "sent", text: `Sent ${money(result.amount)} to ${result.to}.` }); push({ from: "me", text: `Sent you ${money(result.amount)} ✓` }); setText(""); }} /></>);
+          <ConfirmPayment id={result.id} amount={result.amount} to={result.to} reason={result.reason} onDone={(d) => paidOut(result.amount, result.to, d)} /></>);
         case "blocked": return (<><div className="smart-top">{result.choices ? <><span className="chip">Pay</span>Two people match this name</> : <><span className="chip warn">Shield</span>Payment stopped</>}</div>
           <div className="smart-title" data-testid="pad-blocked">{result.choices ? "Who did you mean?" : "Not sent"}</div>
           <div className="smart-sub">{result.reasons.join(" ")}</div>
@@ -240,7 +278,14 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
             </div>
             <div className="msgs" ref={msgsRef} data-testid="pad-messages">
               {msgs.map((m, k) => (
-                <div key={k} className={`b ${m.from === "me" ? "out" : "in"}`}>{m.text}{m.link && <> <a href={m.link}>{(typeof location !== "undefined" ? location.host : "") + m.link}</a></>}</div>
+                m.paid ? (
+                  <div key={k} className="b out paybubble" data-testid="pay-bubble">
+                    <span className="pb-amt num"><CountUp cents={m.paid.cents} /></span>
+                    <span className="pb-state">Paid <Tick /></span>
+                    {m.paid.delivered && <span className="pb-meta">{m.paid.delivered}</span>}
+                    {m.paid.receiptId && <a className="pb-link" href={`/r/${m.paid.receiptId}`} target="_blank" rel="noreferrer">View receipt</a>}
+                  </div>
+                ) : <div key={k} className={`b ${m.from === "me" ? "out" : "in"}`}>{m.text}{m.link && <> <a href={m.link}>{(typeof location !== "undefined" ? location.host : "") + m.link}</a></>}</div>
               ))}
             </div>
             <form className="input-row" onSubmit={sendText}>

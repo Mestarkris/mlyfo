@@ -93,6 +93,9 @@ const MIGRATIONS = [
   "ALTER TABLE contacts ADD COLUMN source TEXT NOT NULL DEFAULT 'saved'", // saved | mlyfo | confirmed
   "ALTER TABLE contacts ADD COLUMN created_at TEXT",
   "ALTER TABLE users ADD COLUMN address_changed_at TEXT",
+  "ALTER TABLE payments ADD COLUMN receipt_id TEXT",
+  "ALTER TABLE payments ADD COLUMN chain_status TEXT", // pending | recorded | failed
+  "ALTER TABLE payments ADD COLUMN chain_sig TEXT",
 ];
 
 type Row = Record<string, unknown>;
