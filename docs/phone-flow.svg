@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>How one Mlyfo payment works on a phone</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0D1A"/><stop offset="1" stop-color="#07080D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.2" cy="0" r="0.9">
+      <stop offset="0" stop-color="#4B5BFF" stop-opacity="0.28"/><stop offset="1" stop-color="#4B5BFF" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7A8199"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="560" rx="24" fill="url(#bg)"/>
+  <rect width="1200" height="560" rx="24" fill="url(#glow)"/>
+
+  <text x="48" y="64" fill="#F1F2F8" font-size="28" font-weight="600">One payment on a phone, from keyboard to receipt</text>
+  <text x="48" y="96" fill="#A3A9BE" font-size="16">Mlyfo reads only what you type, copy or share. Your wallet signs. Mlyfo never holds keys.</text>
+
+  <!-- step cards -->
+  <g font-size="15">
+    <!-- 1 -->
+    <rect x="48" y="132" width="252" height="232" rx="18" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <circle cx="80" cy="166" r="16" fill="#4B5BFF"/><text x="80" y="171" fill="#fff" font-size="15" font-weight="600" text-anchor="middle">1</text>
+    <text x="108" y="171" fill="#F1F2F8" font-size="17" font-weight="600">You type</text>
+    <text x="72" y="208" fill="#A3A9BE">In any chat app, with the</text>
+    <text x="72" y="228" fill="#A3A9BE">Mlyfo keyboard:</text>
+    <rect x="72" y="246" width="204" height="40" rx="20" fill="#000" stroke="#3A3A3F"/>
+    <text x="90" y="271" fill="#F1F2F8" font-family="ui-monospace, Menlo, monospace" font-size="15">pay mum 20</text>
+    <text x="72" y="318" fill="#7A8199" font-size="13">Also works from a copied</text>
+    <text x="72" y="336" fill="#7A8199" font-size="13">message or a shared link</text>
+
+    <!-- 2 -->
+    <rect x="332" y="132" width="252" height="232" rx="18" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <circle cx="364" cy="166" r="16" fill="#4B5BFF"/><text x="364" y="171" fill="#fff" font-size="15" font-weight="600" text-anchor="middle">2</text>
+    <text x="392" y="171" fill="#F1F2F8" font-size="17" font-weight="600">Card above the keys</text>
+    <rect x="356" y="190" width="204" height="96" rx="12" fill="#2C2C30"/>
+    <text x="372" y="214" fill="#A1A1A8" font-size="12">Pay · Confirmed by Mum</text>
+    <text x="372" y="242" fill="#FFFFFF" font-size="16" font-weight="600">Send $20.00 to Mum</text>
+    <rect x="372" y="254" width="76" height="22" rx="11" fill="#4B5BFF"/><text x="410" y="269" fill="#fff" font-size="12" font-weight="600" text-anchor="middle">Pay $20</text>
+    <text x="356" y="318" fill="#A3A9BE" font-size="13">Shield and your people list</text>
+    <text x="356" y="336" fill="#A3A9BE" font-size="13">check on the phone, instantly</text>
+
+    <!-- 3 -->
+    <rect x="616" y="132" width="252" height="232" rx="18" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <circle cx="648" cy="166" r="16" fill="#4B5BFF"/><text x="648" y="171" fill="#fff" font-size="15" font-weight="600" text-anchor="middle">3</text>
+    <text x="676" y="171" fill="#F1F2F8" font-size="17" font-weight="600">Your wallet signs</text>
+    <text x="640" y="208" fill="#A3A9BE">5-second undo, then the</text>
+    <text x="640" y="228" fill="#A3A9BE">wallet’s own screen opens</text>
+    <text x="640" y="248" fill="#A3A9BE">(Mobile Wallet Adapter).</text>
+    <circle cx="742" cy="296" r="26" fill="none" stroke="#9DA7FF" stroke-width="2"/>
+    <path d="M730 292c0-7 5-12 12-12s12 5 12 12M734 300c0-5 3-8 8-8s8 3 8 8v4M742 296v12" fill="none" stroke="#9DA7FF" stroke-width="2" stroke-linecap="round"/>
+    <text x="640" y="350" fill="#7A8199" font-size="13">Over your limit: fingerprint</text>
+
+    <!-- 4 -->
+    <rect x="900" y="132" width="252" height="232" rx="18" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+    <circle cx="932" cy="166" r="16" fill="#4B5BFF"/><text x="932" y="171" fill="#fff" font-size="15" font-weight="600" text-anchor="middle">4</text>
+    <text x="960" y="171" fill="#F1F2F8" font-size="17" font-weight="600">Receipt in chat</text>
+    <rect x="944" y="190" width="184" height="82" rx="16" fill="#3D4DF0"/>
+    <text x="960" y="218" fill="#FFFFFF" font-size="17" font-weight="600">$20.00 · Paid ✓</text>
+    <text x="960" y="240" fill="#DDE1FF" font-size="12">Delivered to Mum</text>
+    <text x="960" y="259" fill="#FFFFFF" font-size="12" text-decoration="underline">mlyfo.app/r/MLY-7F3K…</text>
+    <text x="924" y="300" fill="#A3A9BE" font-size="13">The keyboard types the link,</text>
+    <text x="924" y="318" fill="#A3A9BE" font-size="13">so it works in every chat app.</text>
+    <text x="924" y="336" fill="#7FD4B8" font-size="13">Receipt recorded on Solana</text>
+  </g>
+
+  <!-- arrows -->
+  <line x1="304" y1="248" x2="326" y2="248" stroke="#7A8199" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="588" y1="248" x2="610" y2="248" stroke="#7A8199" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="872" y1="248" x2="894" y2="248" stroke="#7A8199" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- where things run -->
+  <rect x="48" y="392" width="540" height="128" rx="18" fill="#4B5BFF" fill-opacity="0.10" stroke="#4B5BFF" stroke-opacity="0.35"/>
+  <text x="72" y="426" fill="#B4BCFF" font-size="16" font-weight="600">Stays on the phone</text>
+  <text x="72" y="456" fill="#D8DBEA" font-size="14">Ordinary typing (never logged or sent)</text>
+  <text x="72" y="478" fill="#D8DBEA" font-size="14">Your wallet keys (only the wallet can sign)</text>
+  <text x="72" y="500" fill="#D8DBEA" font-size="14">Pattern reading, Shield list and your people, for instant checks</text>
+
+  <rect x="612" y="392" width="540" height="128" rx="18" fill="#E8589E" fill-opacity="0.08" stroke="#E8589E" stroke-opacity="0.3"/>
+  <text x="636" y="426" fill="#FF9BC5" font-size="16" font-weight="600">Goes to Mlyfo, only after you tap</text>
+  <text x="636" y="456" fill="#D8DBEA" font-size="14">The one line you act on, if Claude needs to read it</text>
+  <text x="636" y="478" fill="#D8DBEA" font-size="14">Spend limits (enforced by the server, not just the keyboard)</text>
+  <text x="636" y="500" fill="#D8DBEA" font-size="14">Receipt, delivery status and the Solana record</text>
+</svg>
