@@ -268,9 +268,10 @@ footer .wrap span:first-child{margin-right:auto}
 .b{animation:pop .28s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}}
 .smart{position:relative;overflow:hidden}
-.smart.glow::before{content:"";position:absolute;pointer-events:none;inset:-1px;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang),transparent 0 70%,var(--teal) 85%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 2.4s linear 1}
-@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
-@keyframes spin{to{--ang:360deg}}
+/* A new suggestion gets a soft teal ring that fades out. Box-shadow renders the same in every browser. */
+.smart.glow{animation:cardring 1.1s ease-out 1}
+@keyframes cardring{from{box-shadow:0 0 0 0 rgba(11,156,138,.32),0 1px 0 var(--key-edge)}to{box-shadow:0 0 0 7px rgba(11,156,138,0),0 1px 0 var(--key-edge)}}
+@media (prefers-reduced-motion:reduce){.smart.glow{animation:none}}
 .person{transition:background .3s,color .3s}
 .person.flip{animation:flip .45s ease}
 @keyframes flip{50%{transform:rotateX(90deg)}}
