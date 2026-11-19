@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import HeroDemo from "@/components/HeroDemo";
-import Reveal from "@/components/Reveal";
 import { currentUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -39,48 +38,52 @@ export default async function Home() {
 
       <main>
         <div className="hero"><div className="wrap">
-          <div className="hero-text">
-            <h1>Text it. Pay it. Stay in the chat.</h1>
-            <p className="lede">Mlyfo is the AI keyboard with a wallet built in. Split bills, pay requests, check addresses and book plans from any app you type in.</p>
-            <div className="hero-cta">
-              <Link className="btn btn-ink" href={primary.href}>{primary.label}</Link>
-              <Link className="btn btn-ghost" href={user ? "/app/pad" : "/signin?demo=1"}>{user ? "Open Mlyfo Pad" : "Try the demo account"}</Link>
-            </div>
-            <div className="platforms"><span><i className="dot" />Web and Android</span><span><i className="dot soon" />iPhone in 2027</span></div>
+          <h1>Text it. Pay it.<br />Stay in the chat.</h1>
+          <p className="lede">The AI keyboard with a wallet built in.</p>
+          <div className="hero-cta">
+            <Link className="btn btn-ink" href={primary.href}>{primary.label}</Link>
+            <Link className="btn btn-ghost" href={user ? "/app/pad" : "/signin?demo=1"}>{user ? "Open Mlyfo Pad" : "Try the demo account"}</Link>
           </div>
-          <HeroDemo />
+          <div className="platforms"><span><i className="dot" />Web and Android</span><span><i className="dot soon" />iPhone in 2027</span></div>
         </div></div>
 
+        <section className="demo"><div className="wrap">
+          <h2 className="center">Tap a message. Watch it pay.</h2>
+          <p className="center-sub">Split bills, pay requests, check addresses and plan, from any app you type in.</p>
+          <div className="demo-grid"><HeroDemo /></div>
+        </div></section>
+
         <section id="features"><div className="wrap">
-          <div className="sec-head">
-            <h2>Made for the money part of a conversation.</h2>
-            <p>Other keyboards stop at the maths. Mlyfo collects the money, checks where it goes and keeps you inside the limits you set.</p>
-          </div>
-          <div className="feat">
-            <div className="panel big">
-              <div>
-                <h3>Split and collect</h3>
-                <p>Type “split 236 / 4”. Each person gets a payment link in the chat, and Mlyfo keeps track of who has paid until everyone has.</p>
+          <h2 className="center">Made for the money part of a conversation.</h2>
+          <p className="center-sub">Other keyboards stop at the maths. Mlyfo collects the money, checks where it goes and keeps you inside your limits.</p>
+          <div className="tiles">
+            <div className="tile">
+              <div className="tile-ui">
+                <div className="receipt">
+                  <div className="receipt-row"><span>🍝</span><span>Zoya</span><span className="amt">$59.00</span><span className="state ok">Paid</span></div>
+                  <div className="receipt-row"><span>🚗</span><span>Kabir</span><span className="amt">$59.00</span><span className="state ok">Paid</span></div>
+                  <div className="receipt-row"><span>🌊</span><span>Sofía</span><span className="amt">$59.00</span><span className="state">Link sent</span></div>
+                </div>
               </div>
-              <Reveal className="receipt">
-                <div className="receipt-row"><span>🍝</span><span>Zoya</span><span className="amt">$59.00</span><span className="state ok">Paid</span></div>
-                <div className="receipt-row"><span>🚗</span><span>Kabir</span><span className="amt">$59.00</span><span className="state ok">Paid</span></div>
-                <div className="receipt-row"><span>🌊</span><span>Sofía</span><span className="amt">$59.00</span><span className="state">Link sent</span></div>
-                <div className="receipt-row"><span>🙂</span><span>You</span><span className="amt">$59.00</span><span className="state ok">Covered</span></div>
-              </Reveal>
+              <h3>Split a bill and collect every share.</h3>
+              <p>Type “split 236 / 4”. Each person gets a payment link, and Mlyfo tracks who has paid.</p>
             </div>
-            <div className="stack">
-              <div className="panel">
-                <h3>Address Shield</h3>
-                <p>Every address and link is checked before money moves: new recipients, look-alike addresses and known scams.</p>
-                <div className="mini warn"><span>⚠︎</span><span><b>This isn’t Ada’s saved address.</b> The first and last 4 characters match, but the middle doesn’t.</span></div>
+            <div className="tile">
+              <div className="tile-ui">
+                <div className="mini warn"><span aria-hidden>!</span><span><b>This isn’t Ada’s saved address.</b> The first and last 4 characters match, but the middle doesn’t.</span></div>
               </div>
-              <div className="panel">
-                <h3>Spend limits</h3>
-                <p>One tap under your limit. Anything above it needs your confirmation.</p>
-                <div className="meter"><i /></div>
-                <div className="meter-l"><span>$124 sent today</span><span>$200 daily limit</span></div>
+              <h3>Catch the wrong address before you pay.</h3>
+              <p>Shield checks new recipients, look-alike addresses, known scams and risky links.</p>
+            </div>
+            <div className="tile">
+              <div className="tile-ui">
+                <div className="limit-ui">
+                  <div className="meter"><i /></div>
+                  <div className="meter-l"><span>$124 sent today</span><span>$200 limit</span></div>
+                </div>
               </div>
+              <h3>One tap under your limit.</h3>
+              <p>Anything above the daily or per-person limit you set needs your confirmation.</p>
             </div>
           </div>
           <div className="more">
@@ -89,11 +92,12 @@ export default async function Home() {
         </div></section>
 
         <div className="works"><div className="wrap">
-          <span>Works with</span><span>Solana</span><span>USDC</span><span>Jupiter</span><span>Seed Vault</span><span>Phantom</span><span>Google Calendar</span><span>Google Meet</span><span>Claude</span><span>Kane CLI</span>
+          <p className="works-label">Works with</p>
+          <ul className="works-list">{["Solana", "USDC", "Jupiter", "Seed Vault", "Phantom", "Google Calendar", "Google Meet", "Claude", "Kane CLI"].map((w) => <li key={w}>{w}</li>)}</ul>
         </div></div>
 
         <section id="security"><div className="wrap">
-          <div className="sec-head"><h2>Your keys never leave your wallet.</h2></div>
+          <h2 className="center">Your keys never leave your wallet.</h2>
           <div className="sec-grid">
             <div><h3>Mlyfo can’t hold your funds</h3><p>Payments are signed in your own wallet or Seed Vault. We never see a private key.</p></div>
             <div><h3>Your typing stays yours</h3><p>Ordinary typing stays on the phone. Only messages about money, or ones you ask to rewrite, go to Claude to be read, and nothing moves until you tap.</p></div>
@@ -102,16 +106,15 @@ export default async function Home() {
         </div></section>
 
         <section id="verified" style={{ paddingTop: 0 }}><div className="wrap">
-          <div className="sec-head">
-            <h2>Every money flow is tested by an AI in a real browser.</h2>
-            <p>Before each release, Kane CLI signs up, splits a bill, tries to pay a scam address and breaks a spend limit, just like a person would. If anything fails, the release stops and the fix goes back to our coding agent.</p>
-          </div>
+          <h2 className="center">Every money flow is tested in a real browser.</h2>
+          <p className="center-sub">Before each release, Kane CLI signs up, splits a bill, tries to pay a scam address and breaks a spend limit, just like a person would. If anything fails, the release stops.</p>
         </div></section>
 
         <section style={{ paddingTop: 0 }}><div className="wrap">
           <div className="final">
-            <div><h2>Start sending from your keyboard today.</h2><p>Free to create an account. New accounts get $500 in demo USDC to try every feature.</p></div>
-            <form action="/signup" method="get"><input type="email" name="email" placeholder="you@email.com" aria-label="Email address" /><button className="btn btn-teal">Create account</button></form>
+            <h2>Pay from your keyboard.</h2>
+            <p>Free to create an account. New accounts get $500 in demo USDC to try every feature.</p>
+            <form action="/signup" method="get"><input type="email" name="email" placeholder="you@email.com" aria-label="Email address" /><button className="btn btn-ink">Create account</button></form>
           </div>
         </div></section>
       </main>
