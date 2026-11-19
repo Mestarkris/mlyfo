@@ -1,8 +1,8 @@
 import Icon from "@/components/Icon";
-import Avatar from "@/components/Avatar";
 import { currentUser } from "@/lib/auth";
 import { contacts, linkScans } from "@/lib/queries";
-import { AddressCheck, LinkScan, AddContact, RemoveContact } from "@/components/ShieldTools";
+import Link from "next/link";
+import { AddressCheck, LinkScan } from "@/components/ShieldTools";
 
 export default async function Shield() {
   const u = (await currentUser())!;
@@ -30,14 +30,8 @@ export default async function Shield() {
             ))}
           </div>}
         </div>
-        <div className="c" style={{ gridColumn: "1 / -1" }}><h3>Saved contacts</h3>
-          <div className="list">
-            {cs.length === 0 && <div className="empty">No contacts yet. Save someone you pay often.</div>}
-            {cs.map((c) => (
-              <div className="li" key={c.id}><Avatar name={c.label} /><div>{c.label}<small className="addr">{c.address}</small></div><RemoveContact id={c.id} /></div>
-            ))}
-          </div>
-          <AddContact />
+        <div className="c" style={{ gridColumn: "1 / -1" }}><h3>Saved people <Link href="/app/people">Manage people</Link></h3>
+          <p className="sub" style={{ marginTop: 6 }}>Shield compares every new address with the {cs.length} {cs.length === 1 ? "person" : "people"} you’ve saved to catch look-alikes. Add and check people on the People page.</p>
         </div>
       </div>
     </>

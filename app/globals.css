@@ -943,3 +943,38 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em}
 .phone.dark .chips{padding-inline:12px;scroll-padding-inline:12px;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 28px),transparent);
   mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 28px),transparent)}
+
+/* ================= People ================= */
+.people-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.people-side{display:grid;gap:16px}
+.person-row{grid-template-columns:36px 1fr auto;align-items:start;padding:14px 0}
+.person-row small{display:block}
+.person-name{font-weight:500}
+.person-row .addr{font-size:12px;color:var(--mute);margin-top:2px}
+.trust{font-weight:500}
+.trust.mlyfo{color:#9DA7FF}
+.trust.confirmed{color:#7FD4B8}
+.trust.saved{color:var(--slate)}
+.changed{color:#F5B54A;margin-top:4px}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line);margin-top:12px}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--slate)}
+.seg button[aria-selected="true"]{background:rgba(255,255,255,.10);color:var(--ink)}
+.seg button:focus-visible{outline:2px solid var(--teal)}
+.person-form .hint{font-size:13px;color:var(--mute);margin-top:8px}
+.person-form .mini{margin-top:12px}
+.ask-link{display:flex;gap:8px;align-items:center;width:100%;margin-top:4px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.ask-link .addr{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.ask-row{grid-template-columns:36px 1fr auto}
+@media (max-width:960px){.people-grid{grid-template-columns:1fr}}
+
+/* Pad: choices when a name matches two people, saving a new address */
+.phone.dark .choices{display:grid;gap:6px;margin-top:10px}
+.phone.dark .choice{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#3A3A3F;color:#fff;font-size:14px}
+.phone.dark .choice:hover{background:#48484D}
+.phone.dark .choice:focus-visible{outline:2px solid #7D89FF}
+.phone.dark .choice .addr{color:#A1A1A8;font-size:11px}
+.phone.dark .save-contact{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.phone.dark .save-contact input{flex:1;min-width:0;height:32px;border-radius:8px;border:1px solid #4A4A50;background:#1B1B1E;color:#fff;padding:0 10px;font-size:13px}
+.phone.dark .save-contact input:focus{outline:none;border-color:#7D89FF}
+.chatlist-add{display:block;margin:12px 18px 0;padding:10px 14px;border-radius:12px;background:rgba(111,123,255,.14);color:#C3C8FF;font-size:14px;font-weight:500;text-align:center}
+.chatlist-add:hover{background:rgba(111,123,255,.22)}

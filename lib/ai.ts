@@ -22,7 +22,7 @@ const IntentSchema = z.object({
   kind: z.enum(["split", "pay", "request", "address", "link", "price", "none"]),
   amount_usd: z.number().describe("Dollar amount, 0 if none. For split, the bill total."),
   people: z.number().int().describe("For split: everyone sharing the bill including the writer. 0 otherwise."),
-  to: z.string().describe("For pay: the recipient as @handle or a Solana address. Empty otherwise."),
+  to: z.string().describe("For pay: the recipient exactly as written: a name, an @handle or a Solana address. Empty otherwise."),
   names: z.array(z.string()).describe("For split: @handles mentioned, without the @. Empty otherwise."),
   note: z.string().describe("What the money is for, a few words, or empty."),
   value: z.string().describe("For address: the Solana address. For link: the URL. For price: the ticker. Empty otherwise."),
@@ -33,7 +33,7 @@ You get one chat message and decide which single keyboard action fits it.
 
 Actions:
 - split: the writer wants to divide a bill. "dinner was 236 for 4 of us", "split 90 with @ada and @kabir".
-- pay: the writer wants to send money to someone named in the message. "send kabir 20 for the cab", "pay @semi 200".
+- pay: the writer wants to send money to someone named in the message. "send kabir 20 for the cab", "pay @semi 200". Keep the @ in "to" only if the writer typed it.
 - request: the other person in the chat is asking the writer for money. "can you send me 50?", "you owe me 12 for lunch". Only use request for messages written by the other person.
 - address: the message contains a Solana address and no payment instruction.
 - link: the message contains a URL.
@@ -77,7 +77,7 @@ function toIntent(o: z.infer<typeof IntentSchema>, rules: Intent): Intent {
       return { kind: "split", totalCents: cents, people: Math.max(2, o.people || o.names.length + 1), names: o.names.map((n) => n.replace(/^@/, "").toLowerCase()) };
     case "pay":
       if (cents <= 0 || !o.to) return rules;
-      return { kind: "pay", amountCents: cents, to: o.to.replace(/^@/, ""), note: o.note };
+      return { kind: "pay", amountCents: cents, to: o.to.trim(), note: o.note };
     case "request":
       return cents > 0 ? { kind: "request", amountCents: cents } : rules;
     case "address":

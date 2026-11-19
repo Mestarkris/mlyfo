@@ -1,17 +1,20 @@
 "use client";
 import Avatar from "./Avatar";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseIntent, type Intent } from "@/lib/intent";
 import { api } from "./api";
 import { money, ConfirmPayment } from "./Widgets";
 
-type Friend = { handle: string; name: string; emoji: string; opener: string; address?: string };
+/** A chat. Demo friends come with a scripted first message; your saved people start empty. */
+type Friend = { key: string; handle: string; name: string; opener: string; payTo: string; splitName: string; saved?: boolean };
+type Choice = { to: string; label: string; detail: string };
 type Msg = { from: "me" | "them"; text: string; link?: string };
 type Result =
   | { kind: "sent"; text: string }
   | { kind: "confirm"; id: number; amount: number; to: string; reason: string }
-  | { kind: "blocked"; reasons: string[]; typed?: string; twin?: string | null }
+  | { kind: "blocked"; reasons: string[]; typed?: string; twin?: string | null; choices?: Choice[]; amount?: number; note?: string }
   | { kind: "split"; title: string; shares: { label: string; amount_cents: number; token: string; is_owner: number }[] }
   | { kind: "link"; verdict: string; reasons: string[]; source: string; testUrl?: string | null; kaneError?: string }
   | { kind: "address"; findings: { level: string; message: string }[]; typed: string; twin: string | null };
@@ -26,13 +29,13 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
   const [screen, setScreen] = useState<"list" | "chat">("chat");
   const msgsRef = useRef<HTMLDivElement>(null);
   const friend = friends[fi];
-  const [threads, setThreads] = useState<Record<string, Msg[]>>(() => Object.fromEntries(friends.map((f) => [f.handle, [{ from: "them", text: f.opener }]])));
+  const [threads, setThreads] = useState<Record<string, Msg[]>>(() => Object.fromEntries(friends.map((f) => [f.key, f.opener ? [{ from: "them", text: f.opener }] : []])));
   const [text, setText] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
   const [down, setDown] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const msgs = threads[friend.handle];
+  const msgs = threads[friend.key] ?? [];
 
   // What the keyboard suggests: from what you're typing first, otherwise from their last message.
   const lastTheirs = [...msgs].reverse().find((m) => m.from === "them")?.text ?? "";
@@ -76,40 +79,44 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
   useEffect(() => { setResult(null); setText(""); }, [fi]);
   useEffect(() => { setResult((r) => (r?.kind === "sent" && text === "" ? r : null)); }, [intent.kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const push = (m: Msg) => setThreads((t) => ({ ...t, [friend.handle]: [...t[friend.handle], m] }));
+  const push = (m: Msg) => setThreads((t) => ({ ...t, [friend.key]: [...(t[friend.key] ?? []), m] }));
   const press = (c: string) => { setDown(c); setTimeout(() => setDown(null), 110); };
+
+  /** Send money. "target" is "@handle", a saved contact's name or an address. */
+  async function pay(target: string, amountCents: number, note: string) {
+    let to = target;
+    const r = await api("/api/pay", "POST", { to, amount: amountCents / 100, note });
+    const d = r.data;
+    if (d.to) to = d.to;
+    if (d.status === "sent") { setResult({ kind: "sent", text: `Sent ${money(amountCents)} to ${to}.` }); push({ from: "me", text: `Sent you ${money(amountCents)} ✓` }); setText(""); }
+    else if (d.status === "needs_confirmation") setResult({ kind: "confirm", id: d.paymentId, amount: amountCents, to, reason: d.reasons.join(" ") });
+    else {
+      let twin: string | null = null; let typed: string | undefined;
+      if (d.findings?.some((f: any) => f.code === "lookalike")) {
+        typed = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(target) ? target : undefined;
+        if (typed) twin = (await api("/api/shield/address", "POST", { address: typed })).data.twin;
+      }
+      setResult({ kind: "blocked", reasons: d.reasons ?? [d.error], typed, twin, choices: d.choices, amount: amountCents, note });
+    }
+    router.refresh();
+  }
 
   async function act() {
     setBusy(true);
     try {
       if (intent.kind === "split") {
-        const others = friends.filter((f) => f.handle !== friend.handle).map((f) => f.handle);
-        const names = intent.names.length ? intent.names : [friend.handle, ...others].slice(0, Math.max(1, intent.people - 1));
+        const others = friends.filter((f) => f.key !== friend.key).map((f) => f.splitName);
+        const names = intent.names.length ? intent.names : [friend.splitName, ...others].slice(0, Math.max(1, intent.people - 1));
         const r = await api("/api/splits", "POST", { title: `Split with ${friend.name.split(" ")[0]}`, total: intent.totalCents / 100, people: names });
         if (!r.ok) setResult({ kind: "blocked", reasons: [r.data.error ?? "Couldn’t create the split."] });
         else {
           setResult({ kind: "split", title: r.data.title, shares: r.data.shares });
-          const mine = r.data.shares.find((s: any) => s.label === friend.handle);
+          const mine = r.data.shares.find((s: any) => s.label === friend.splitName);
           if (mine) push({ from: "me", text: `Your share is ${money(mine.amount_cents)}. Pay here:`, link: `/pay/${mine.token}` });
           setText("");
         }
       } else if (intent.kind === "pay" || intent.kind === "request") {
-        let to = intent.kind === "pay" ? intent.to : "@" + friend.handle;
-        const amount = intent.amountCents / 100;
-        const r = await api("/api/pay", "POST", { to, amount, note: intent.kind === "pay" ? intent.note : `Requested in chat` });
-        const d = r.data;
-        if (d.to) to = d.to;
-        if (d.status === "sent") { setResult({ kind: "sent", text: `Sent ${money(intent.amountCents)} to ${to}.` }); push({ from: "me", text: `Sent you ${money(intent.amountCents)} ✓` }); setText(""); }
-        else if (d.status === "needs_confirmation") setResult({ kind: "confirm", id: d.paymentId, amount: intent.amountCents, to, reason: d.reasons.join(" ") });
-        else {
-          let twin: string | null = null; let typed: string | undefined;
-          if (d.findings?.some((f: any) => f.code === "lookalike")) {
-            typed = intent.kind === "pay" ? intent.to : undefined;
-            if (typed) twin = (await api("/api/shield/address", "POST", { address: typed })).data.twin;
-          }
-          setResult({ kind: "blocked", reasons: d.reasons ?? [d.error], typed, twin });
-        }
-        router.refresh();
+        await pay(intent.kind === "pay" ? intent.to : friend.payTo, intent.amountCents, intent.kind === "pay" ? intent.note : "Requested in chat");
       } else if (intent.kind === "address") {
         const r = await api("/api/shield/address", "POST", { address: intent.address });
         setResult({ kind: "address", findings: r.data.findings, typed: intent.address, twin: r.data.twin });
@@ -146,18 +153,22 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
     if (result) {
       switch (result.kind) {
         case "sent": return (<><div className="smart-top"><span className="chip">Paid</span>Shield checked</div><div className="smart-title" data-testid="pad-sent">{result.text}</div></>);
-        case "confirm": return (<><div className="smart-top"><span className="chip grey">Limit</span>Needs your confirmation</div>
+        case "confirm": return (<><div className="smart-top">{result.reason.includes("changed their wallet") ? <span className="chip warn">Shield</span> : <span className="chip grey">Limit</span>}Needs your confirmation</div>
           <ConfirmPayment id={result.id} amount={result.amount} to={result.to} reason={result.reason} onDone={() => { setResult({ kind: "sent", text: `Sent ${money(result.amount)} to ${result.to}.` }); push({ from: "me", text: `Sent you ${money(result.amount)} ✓` }); setText(""); }} /></>);
-        case "blocked": return (<><div className="smart-top"><span className="chip warn">Shield</span>Payment stopped</div>
-          <div className="smart-title" data-testid="pad-blocked">Not sent</div>
+        case "blocked": return (<><div className="smart-top">{result.choices ? <><span className="chip">Pay</span>Two people match this name</> : <><span className="chip warn">Shield</span>Payment stopped</>}</div>
+          <div className="smart-title" data-testid="pad-blocked">{result.choices ? "Who did you mean?" : "Not sent"}</div>
           <div className="smart-sub">{result.reasons.join(" ")}</div>
-          {result.twin && result.typed && <div className="addr" style={{ marginTop: 6 }}>{[...result.typed].map((c, i) => <span key={i} className={c !== result.twin![i] ? "x" : ""}>{c}</span>)}</div>}</>);
+          {result.twin && result.typed && <div className="addr" style={{ marginTop: 6 }}>{[...result.typed].map((c, i) => <span key={i} className={c !== result.twin![i] ? "x" : ""}>{c}</span>)}</div>}
+          {result.choices && result.amount && <div className="choices" data-testid="pay-choices">{result.choices.map((c) => (
+            <button key={c.to} type="button" className="choice" disabled={busy} onClick={async () => { setBusy(true); try { await pay(c.to, result.amount!, result.note ?? ""); } finally { setBusy(false); } }}>
+              <b>{c.label}</b><span className="addr">{c.detail}</span></button>))}</div>}</>);
         case "address": {
           const block = result.findings.find((f) => f.level === "block"); const warn = result.findings.find((f) => f.level === "warn");
           return (<><div className="smart-top"><span className={`chip ${block || warn ? "warn" : ""}`}>Shield</span>Address check</div>
             <div className="smart-title" data-testid="pad-address">{block ? "Don’t send to this address" : warn ? "New address, check it first" : "Address looks right"}</div>
             <div className="smart-sub">{result.findings.map((f) => f.message).join(" ")}</div>
-            {result.twin && <div className="addr" style={{ marginTop: 6 }}>{[...result.typed].map((c, i) => <span key={i} className={c !== result.twin![i] ? "x" : ""}>{c}</span>)}</div>}</>);
+            {result.twin && <div className="addr" style={{ marginTop: 6 }}>{[...result.typed].map((c, i) => <span key={i} className={c !== result.twin![i] ? "x" : ""}>{c}</span>)}</div>}
+            {!block && warn && <SaveContact address={result.typed} onSaved={(n) => { push({ from: "me", text: `Saved ${n} to my people ✓` }); router.refresh(); }} />}</>);
         }
         case "link": return (<><div className="smart-top"><span className={`chip ${result.verdict === "safe" ? "" : "warn"}`}>Shield</span>{result.source === "kane" ? "Opened by Kane in a real browser" : "Quick check"}</div>
           <div className="smart-title" data-testid="pad-link">{result.verdict === "safe" ? "Link looks safe" : result.verdict === "risky" ? "Be careful with this link" : "Don’t open this link"}</div>
@@ -175,11 +186,11 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
         <div className="smart-sub">Creates a payment link for each person and tracks who has paid.</div>
         <div className="smart-actions"><button className="btn btn-ink" disabled={busy} onClick={act}>{busy ? "Creating…" : "Create split links"}</button></div></>);
       case "pay": return (<><div className="smart-top"><span className="chip">Pay</span>Shield checks first{fromModel && <ModelTag />}</div>
-        <div className="smart-title">Send {money(intent.amountCents)} to {intent.to.length > 20 ? intent.to.slice(0, 6) + "…" + intent.to.slice(-4) : intent.to.replace(/^@?/, "@")}</div>
+        <div className="smart-title">Send {money(intent.amountCents)} to {intent.to.length > 20 ? intent.to.slice(0, 6) + "…" + intent.to.slice(-4) : intent.to}</div>
         {intent.note && <div className="smart-sub">For {intent.note}</div>}
         <div className="smart-actions"><button className="btn btn-teal" disabled={busy} onClick={act}>{busy ? "Sending…" : `Pay ${money(intent.amountCents)}`}</button></div></>);
       case "request": return (<><div className="smart-top"><span className="chip">Pay on reply</span>{friend.name.split(" ")[0]} asked for money</div>
-        <div className="smart-title">Send {money(intent.amountCents)} to @{friend.handle}</div>
+        <div className="smart-title">Send {money(intent.amountCents)} to {friend.payTo}</div>
         <div className="smart-actions"><button className="btn btn-teal" disabled={busy} onClick={act}>{busy ? "Sending…" : `Pay ${money(intent.amountCents)}`}</button></div></>);
       case "address": return (<><div className="smart-top"><span className="chip warn">Shield</span>Address in chat</div>
         <div className="smart-title">Check this address before paying</div>
@@ -191,13 +202,13 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
         ? (<><div className="smart-top"><span className="chip grey">Claude</span>Reading your message</div>
           <div className="smart-title quiet" aria-live="polite"><span className="typing" aria-hidden><i /><i /><i /></span></div></>)
         : (<><div className="smart-top"><span className="chip grey">Mlyfo</span>{aiModel ? "Claude reads what you type" : "Ready"}</div>
-          <div className="smart-title quiet">{aiModel ? <>Write it how you’d say it: “can you cover half the cab, it was 18”, or paste an address or link.</> : <>Type “split 60 / 3”, “pay @{friend.handle} 20 for lunch” or paste an address or link.</>}</div></>);
+          <div className="smart-title quiet">{aiModel ? <>Write it how you’d say it: “can you cover half the cab, it was 18”, or paste an address or link.</> : <>Type “split 60 / 3”, “pay {friend.payTo} 20 for lunch” or paste an address or link.</>}</div></>);
     }
   })();
 
   useEffect(() => { msgsRef.current?.scrollTo({ top: msgsRef.current.scrollHeight }); }, [msgs.length, screen, fi]);
 
-  const tries = [`split 236 / 4`, `pay @${friend.handle} 20 for lunch`, `pay @${friend.handle} 150 for rent`, `send 10 usdc to AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx`];
+  const tries = [`split 236 / 4`, `pay ${friend.payTo} 20 for lunch`, `pay ${friend.payTo} 150 for rent`, `send 10 usdc to AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx`];
   const key = (c: string, extra = "") => (
     <button type="button" key={c} tabIndex={-1} className={`k ${extra} ${down === c ? "down" : ""}`}
       onClick={() => { setText((t) => t + c); press(c); inputRef.current?.focus(); }}>{c}</button>
@@ -214,11 +225,12 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
             <div className="chatlist">
               <h2 className="chatlist-title">Messages</h2>
               {friends.map((f, k) => (
-                <button key={f.handle} className="chatlist-row" onClick={() => { setFi(k); setScreen("chat"); }} data-testid={`chat-${f.handle}`}>
+                <button key={f.key} className="chatlist-row" onClick={() => { setFi(k); setScreen("chat"); }} data-testid={`chat-${f.key}`}>
                   <Avatar name={f.name} />
-                  <span className="chatlist-text"><b>{f.name.split(" ")[0]}</b><small>{threads[f.handle].at(-1)!.text}</small></span>
+                  <span className="chatlist-text"><b>{f.name.split(" ")[0]}</b><small>{threads[f.key]?.at(-1)?.text ?? (f.saved ? "Saved person. Say hi or send money" : "")}</small></span>
                 </button>
               ))}
+              <Link href="/app/people" className="chatlist-add">+ Add someone</Link>
             </div>
           ) : (<>
             <div className="chat-head">
@@ -276,4 +288,23 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
 
 function ModelTag() {
   return <span className="model-tag" title="Suggested by Claude">Read by Claude</span>;
+}
+
+/** Offered when the keyboard checks an address you haven't saved. Shield still checks it again on save. */
+function SaveContact({ address, onSaved }: { address: string; onSaved: (name: string) => void }) {
+  const [name, setName] = useState("");
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  if (msg?.ok) return <div className="smart-sub" role="status" style={{ marginTop: 8 }}>{msg.text}</div>;
+  return (
+    <form className="save-contact" onSubmit={async (e) => {
+      e.preventDefault();
+      const r = await api("/api/contacts", "POST", { label: name, address });
+      if (!r.ok) { setMsg({ ok: false, text: r.data.error ?? "Couldn’t save." }); return; }
+      setMsg({ ok: true, text: `Saved as ${r.data.label}. Paying “${r.data.label}” now goes to this wallet.` }); onSaved(r.data.label);
+    }}>
+      <input aria-label="Contact name" placeholder="Save as… (name)" value={name} onChange={(e) => setName(e.target.value)} required />
+      <button className="btn btn-ghost btn-sm">Save contact</button>
+      {msg && !msg.ok && <div className="err" role="alert">{msg.text}</div>}
+    </form>
+  );
 }

@@ -12,14 +12,43 @@ export async function spentToday(userId: number, t: Q = q): Promise<number> {
   return Number(r?.s ?? 0);
 }
 
-export async function resolveRecipient(user: User, to: string): Promise<{ address: string; label: string } | { error: string }> {
-  const t = to.trim().replace(/^@/, "");
-  const byHandle = await q.get<{ address: string; name: string }>("SELECT address, name FROM users WHERE handle = ?", t.toLowerCase());
-  if (byHandle) return { address: byHandle.address, label: "@" + t.toLowerCase() };
-  const contact = await q.get<{ address: string; label: string }>("SELECT address, label FROM contacts WHERE user_id = ? AND lower(label) = lower(?)", user.id, t);
-  if (contact) return contact;
-  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(t)) return { address: t, label: t.slice(0, 4) + "…" + t.slice(-4) };
-  return { error: `No one called “${to}”. Use an @username, a saved contact or a Solana address.` };
+export type Choice = { to: string; label: string; detail: string };
+export type Resolved = { address: string; label: string; userId?: number } | { error: string; choices?: Choice[] };
+
+/**
+ * Who does "to" mean? "@ada" is always the Mlyfo user. A plain name is your saved contact.
+ * If a plain name matches both a contact and a different Mlyfo user, we never guess: we ask.
+ */
+export async function resolveRecipient(user: User, to: string): Promise<Resolved> {
+  const raw = to.trim();
+  const name = raw.replace(/^@/, "");
+  const byHandle = (h: string) => q.get<{ id: number; address: string }>("SELECT id, address FROM users WHERE handle = ?", h.toLowerCase());
+  if (raw.startsWith("@")) {
+    const u = await byHandle(name);
+    return u ? { address: u.address, label: "@" + name.toLowerCase(), userId: u.id } : { error: `There’s no Mlyfo user called @${name}.` };
+  }
+  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(name)) {
+    const c = await q.get<{ label: string }>("SELECT label FROM contacts WHERE user_id = ? AND address = ?", user.id, name);
+    const u = await q.get<{ id: number }>("SELECT id FROM users WHERE address = ?", name);
+    return { address: name, label: c?.label ?? name.slice(0, 4) + "…" + name.slice(-4), userId: u?.id };
+  }
+  const contact = await q.get<{ address: string; label: string }>("SELECT address, label FROM contacts WHERE user_id = ? AND lower(label) = lower(?)", user.id, name);
+  const u = await byHandle(name);
+  if (contact && u && contact.address !== u.address) {
+    return {
+      error: `“${name}” is both your saved contact ${contact.label} and the Mlyfo user @${name.toLowerCase()}. Choose who to pay.`,
+      choices: [
+        { to: contact.address, label: `Your contact ${contact.label}`, detail: contact.address.slice(0, 4) + "…" + contact.address.slice(-4) },
+        { to: "@" + name.toLowerCase(), label: `Mlyfo user @${name.toLowerCase()}`, detail: u.address.slice(0, 4) + "…" + u.address.slice(-4) },
+      ],
+    };
+  }
+  if (contact) {
+    const cu = await q.get<{ id: number }>("SELECT id FROM users WHERE address = ?", contact.address);
+    return { address: contact.address, label: contact.label, userId: cu?.id };
+  }
+  if (u) return { address: u.address, label: "@" + name.toLowerCase(), userId: u.id };
+  return { error: `No one called “${name}”. Use an @username, a saved contact or a Solana address.` };
 }
 
 export type SendResult = {
@@ -30,6 +59,8 @@ export type SendResult = {
   balance_cents?: number;
   /** How the recipient was resolved, e.g. "@ada" or a contact name. */
   to?: string;
+  /** When a name could mean two people, the options to pick from. */
+  choices?: Choice[];
 };
 
 /**
@@ -46,7 +77,7 @@ async function sendInner(user: User, to: string, amountCents: number, opts: { no
   const { note = "", splitShareId, requested = false } = opts;
   if (!Number.isInteger(amountCents) || amountCents <= 0) return { status: "blocked", findings: [], reasons: ["Enter an amount above $0."] };
   const rec = await resolveRecipient(user, to);
-  if ("error" in rec) return { status: "blocked", findings: [], reasons: [rec.error] };
+  if ("error" in rec) return { status: "blocked", findings: [], reasons: [rec.error], choices: rec.choices };
   const shield = await checkAddress(user, rec.address);
   const blockers = shield.findings.filter((f) => f.level === "block");
   const ins = { run: (...a: unknown[]) => q.run(
@@ -62,6 +93,11 @@ async function sendInner(user: User, to: string, amountCents: number, opts: { no
   if (amountCents > user.per_payment_cents) reasons.push(`Over your ${fmt(user.per_payment_cents)} per-payment limit.`);
   if (today + amountCents > user.daily_limit_cents) reasons.push(`This would take you to ${fmt(today + amountCents)} today, over your ${fmt(user.daily_limit_cents)} daily limit.`);
   if (!shield.known && !requested && amountCents > user.new_recipient_cents) reasons.push(`Over your ${fmt(user.new_recipient_cents)} limit for new recipients.`);
+  // A Mlyfo user who switched wallets recently is a common sign of a hacked account. Make the sender confirm.
+  if (rec.userId) {
+    const ch = await q.get<{ days: number }>("SELECT CAST(julianday('now') - julianday(address_changed_at) AS INTEGER) AS days FROM users WHERE id = ? AND address_changed_at > datetime('now','-7 days')", rec.userId);
+    if (ch) reasons.push(`${rec.label} changed their wallet ${ch.days === 0 ? "today" : ch.days === 1 ? "yesterday" : `${ch.days} days ago`}. Check with them outside this chat before paying.`);
+  }
 
   if (reasons.length) {
     const r = await ins.run(user.id, rec.address, rec.address, amountCents, note, "needs_confirmation", reasons.join(" "), splitShareId ?? null);

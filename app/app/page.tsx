@@ -7,6 +7,7 @@ import { readResults } from "@/lib/verify";
 import Receipt from "@/components/Receipt";
 import Avatar from "@/components/Avatar";
 import Icon from "@/components/Icon";
+import { LinkWallet } from "@/components/PeopleTools";
 
 export default async function Overview({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const u = (await currentUser())!;
@@ -110,6 +111,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
           <h3>Your Mlyfo address</h3>
           <div className="sub" style={{ marginTop: 8 }}>Friends can pay <b>@{u.handle}</b>, or this address:</div>
           <div className="addr" style={{ marginTop: 8 }}>{u.address}</div>
+          <LinkWallet current={u.address} />
         </div>
       </div>
     </>

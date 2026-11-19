@@ -10,11 +10,12 @@ const ICONS: Record<string, React.ReactNode> = {
   pad: <svg viewBox="0 0 20 20" aria-hidden><rect {...P} x="2.5" y="5" width="15" height="10" rx="2" /><path {...P} d="M6 8.5h.01M10 8.5h.01M14 8.5h.01M6.5 12h7" /></svg>,
   splits: <svg viewBox="0 0 20 20" aria-hidden><path {...P} d="M10 3v5m0 0-5 4.5V17m5-9 5 4.5V17" /></svg>,
   limits: <svg viewBox="0 0 20 20" aria-hidden><path {...P} d="M3.5 14a6.5 6.5 0 1 1 13 0" /><path {...P} d="m10 14 3-4" /></svg>,
+  people: <svg viewBox="0 0 20 20" aria-hidden><circle {...P} cx="7.5" cy="7" r="3" /><path {...P} d="M2.5 16.5c.6-2.8 2.6-4.5 5-4.5s4.4 1.7 5 4.5" /><path {...P} d="M13 4.2a3 3 0 0 1 0 5.6M14.5 12.3c1.6.6 2.7 2 3 4.2" /></svg>,
   shield: <svg viewBox="0 0 20 20" aria-hidden><path {...P} d="M10 2.5 4 5v4.5c0 3.7 2.6 6.6 6 8 3.4-1.4 6-4.3 6-8V5l-6-2.5Z" /></svg>,
   verified: <svg viewBox="0 0 20 20" aria-hidden><circle {...P} cx="10" cy="10" r="7" /><path {...P} d="m7 10 2 2 4-4" /></svg>,
 };
 const NAV = [
-  ["/app", "overview", "Overview"], ["/app/pad", "pad", "Mlyfo Pad"], ["/app/splits", "splits", "Splits"],
+  ["/app", "overview", "Overview"], ["/app/pad", "pad", "Mlyfo Pad"], ["/app/splits", "splits", "Splits"], ["/app/people", "people", "People"],
   ["/app/limits", "limits", "Limits"], ["/app/shield", "shield", "Shield"], ["/app/verified", "verified", "Verified by Kane"],
 ] as const;
 

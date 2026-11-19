@@ -41,3 +41,24 @@ export async function linkScans(userId: number) {
   return q.all<{ id: number; url: string; verdict: string; reasons: string; source: string; kane_url: string | null; created_at: string }>(
     "SELECT id, url, verdict, reasons, source, kane_url, created_at FROM link_scans WHERE user_id = ? ORDER BY id DESC LIMIT 10", userId);
 }
+
+export type Person = {
+  id: number; label: string; address: string; source: string; created_at: string | null;
+  handle: string | null; changed_days: number | null; paid_count: number; last_paid: string | null;
+};
+
+/** Saved people with how Mlyfo knows their address, for the trust label. */
+export async function people(userId: number): Promise<Person[]> {
+  return q.all<Person>(`
+    SELECT c.id, c.label, c.address, c.source, c.created_at, u.handle,
+      CASE WHEN u.address_changed_at > datetime('now','-7 days') THEN CAST(julianday('now') - julianday(u.address_changed_at) AS INTEGER) END AS changed_days,
+      (SELECT COUNT(*) FROM payments p WHERE p.from_user = c.user_id AND p.to_address = c.address AND p.status = 'sent') AS paid_count,
+      (SELECT MAX(created_at) FROM payments p WHERE p.from_user = c.user_id AND p.to_address = c.address AND p.status = 'sent') AS last_paid
+    FROM contacts c LEFT JOIN users u ON u.address = c.address
+    WHERE c.user_id = ? ORDER BY lower(c.label)`, userId);
+}
+
+export async function openAsks(userId: number) {
+  return q.all<{ token: string; label: string; created_at: string }>(
+    "SELECT token, label, created_at FROM address_requests WHERE user_id = ? AND fulfilled_at IS NULL ORDER BY created_at DESC LIMIT 10", userId);
+}

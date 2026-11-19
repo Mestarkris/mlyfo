@@ -29,7 +29,7 @@ export function parseIntent(text: string): Intent {
   if (m) return { kind: "split", totalCents: money(m[1]), people: Number(m[2]), names: [] };
 
   // "pay @kabir 20 for fuel", "send 200 usdc to @semi", "send $50 to Ada"
-  m = t.match(/^(?:pay|send)\s+(?:@?([a-z0-9_]+)\s+\$?([\d,.]+)|\$?([\d,.]+)\s*(?:usdc|usd|dollars|bucks)?\s+to\s+@?([a-z0-9_]+|[1-9A-HJ-NP-Za-km-z]{32,44}))(?:\s+(?:for\s+)?(.*))?$/i);
+  m = t.match(/^(?:pay|send)\s+(?:(@?[a-z0-9_]+)\s+\$?([\d,.]+)|\$?([\d,.]+)\s*(?:usdc|usd|dollars|bucks)?\s+to\s+(@?[a-z0-9_]+|[1-9A-HJ-NP-Za-km-z]{32,44}))(?:\s+(?:for\s+)?(.*))?$/i);
   if (m) {
     const to = m[1] ?? m[4];
     const amt = m[2] ?? m[3];

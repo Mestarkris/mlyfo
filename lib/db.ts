@@ -79,7 +79,21 @@ CREATE TABLE IF NOT EXISTS link_scans (
   kane_url TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+CREATE TABLE IF NOT EXISTS address_requests (
+  token TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  label TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  fulfilled_by INTEGER REFERENCES users(id),
+  fulfilled_at TEXT
+);
 `;
+
+const MIGRATIONS = [
+  "ALTER TABLE contacts ADD COLUMN source TEXT NOT NULL DEFAULT 'saved'", // saved | mlyfo | confirmed
+  "ALTER TABLE contacts ADD COLUMN created_at TEXT",
+  "ALTER TABLE users ADD COLUMN address_changed_at TEXT",
+];
 
 type Row = Record<string, unknown>;
 export type Q = {
@@ -103,6 +117,8 @@ async function open(): Promise<Client> {
   }
   await c.execute("PRAGMA foreign_keys = ON");
   await c.executeMultiple(SCHEMA);
+  // Columns added after launch. ADD COLUMN fails when the column exists, which is the expected case.
+  for (const m of MIGRATIONS) { try { await c.execute(m); } catch (e) { if (!/duplicate column/i.test(String(e))) throw e; } }
   const n = Number((await c.execute("SELECT COUNT(*) AS n FROM users")).rows[0].n);
   if (n === 0) {
     try { await c.batch(seed(), "write"); }
