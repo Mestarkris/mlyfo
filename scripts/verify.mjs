@@ -31,7 +31,7 @@ function runKane(objective, logFile) {
     const log = fs.createWriteStream(logFile);
     let out = "";
     // Kane's own --timeout doesn't always fire if the browser hangs, so enforce a hard limit.
-    const killer = setTimeout(() => { try { process.kill(-child.pid, "SIGKILL"); } catch {} }, 300_000);
+    const killer = setTimeout(() => { try { process.kill(-child.pid, "SIGKILL"); } catch {} }, 600_000);
     child.on("close", () => clearTimeout(killer));
     child.stdout.on("data", (d) => { out += d; log.write(d); });
     child.stderr.on("data", (d) => process.stderr.write(d));
