@@ -1,0 +1,28 @@
+{
+  "name": "mlyfo",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "start": "next start -p 3100",
+    "reset": "rm -f data/mlyfo.db data/mlyfo.db-wal data/mlyfo.db-shm",
+    "verify": "node scripts/verify.mjs",
+    "loop": "node scripts/loop.mjs",
+    "typecheck": "tsc --noEmit",
+    "ship": "node scripts/loop.mjs && next build"
+  },
+  "dependencies": {
+    "next": "^15.5.29",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
