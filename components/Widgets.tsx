@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "./api";
 import { useToast } from "./Toast";
+import Icon from "./Icon";
 
 export const money = (c: number) => (c < 0 ? "−" : "") + "$" + (Math.abs(c) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -27,7 +28,7 @@ export function ConfirmPayment({ id, amount, to, reason, onDone }: { id: number;
       if (!r.ok) { setErr(r.data.error ?? r.data.reasons?.[0] ?? "Couldn’t confirm."); return; }
       onDone?.(true); router.refresh();
     }}>
-      <div className="mini warn" style={{ marginTop: 10 }}><span aria-hidden>!</span><span><b>Confirm {money(amount)} to {to}.</b> {reason}</span></div>
+      <div className="mini warn" style={{ marginTop: 10 }}><Icon name="alert" /><span><b>Confirm {money(amount)} to {to}.</b> {reason}</span></div>
       <div className="row-form">
         <input type="password" placeholder="Your password" aria-label="Your password to confirm" value={pw} onChange={(e) => setPw(e.target.value)} required />
         <button className="btn btn-ink btn-sm" disabled={busy}>{busy ? "Confirming…" : "Confirm payment"}</button>

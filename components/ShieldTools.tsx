@@ -1,4 +1,5 @@
 "use client";
+import Icon from "./Icon";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "./api";
@@ -17,7 +18,7 @@ export function AddressCheck() {
       </form>
       {res && top && (
         <div className={`mini ${top.level === "block" ? "warn" : top.level === "ok" ? "ok" : "warn"}`} data-testid="address-result">
-          <span>{top.level === "ok" ? "✓" : "⚠︎"}</span>
+          <Icon name={top.level === "ok" ? "check" : "alert"} />
           <div>
             <b>{top.level === "block" ? "Blocked" : top.level === "warn" ? "Check before sending" : "Looks fine"}.</b>{" "}
             {res.findings.map((f) => f.message).join(" ")}
@@ -54,7 +55,7 @@ export function LinkScan({ enabled }: { enabled: boolean }) {
       {res && (
         <div style={{ marginTop: 14 }} data-testid="link-result">
           <span className={`verdict ${res.verdict}`}>{res.verdict === "safe" ? "Safe" : res.verdict === "risky" ? "Risky" : "Dangerous"}</span>
-          {res.source === "kane" && <span className="kane-badge" style={{ marginLeft: 10 }}>✓ Opened by Kane in a real browser</span>}
+          {res.source === "kane" && <span className="kane-badge" style={{ marginLeft: 10 }}>Opened by Kane in a real browser</span>}
           <ul className="reasons">{res.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
           {res.kaneError && <div className="sub" style={{ marginTop: 8 }}>Deep scan unavailable: {res.kaneError} Showing the quick check.</div>}
           {res.testUrl && <a className="sub" href={res.testUrl} target="_blank" rel="noreferrer" style={{ color: "var(--teal-ink)" }}>See Kane’s evidence</a>}

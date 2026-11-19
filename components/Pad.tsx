@@ -1,4 +1,5 @@
 "use client";
+import Avatar from "./Avatar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseIntent, type Intent } from "@/lib/intent";
@@ -214,7 +215,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
               <h2 className="chatlist-title">Messages</h2>
               {friends.map((f, k) => (
                 <button key={f.handle} className="chatlist-row" onClick={() => { setFi(k); setScreen("chat"); }} data-testid={`chat-${f.handle}`}>
-                  <span className="ava">{f.emoji}</span>
+                  <Avatar name={f.name} />
                   <span className="chatlist-text"><b>{f.name.split(" ")[0]}</b><small>{threads[f.handle].at(-1)!.text}</small></span>
                 </button>
               ))}
@@ -222,7 +223,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
           ) : (<>
             <div className="chat-head">
               <button type="button" className="back" onClick={() => setScreen("list")} aria-label="All chats">‹</button>
-              <div className="who"><div className="ava">{friend.emoji}</div><span className="name-pill">{friend.name.split(" ")[0]} ›</span></div>
+              <div className="who"><Avatar name={friend.name} /><span className="name-pill">{friend.name.split(" ")[0]} ›</span></div>
               <span className="back-spacer" />
             </div>
             <div className="msgs" ref={msgsRef} data-testid="pad-messages">
@@ -236,7 +237,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
               <button className="send" aria-label="Send" disabled={!text.trim()}>↑</button>
             </form>
             <div className="kb">
-              <div className="smart glow" key={intent.kind + (result?.kind ?? "")} data-testid="smart-card">{card}</div>
+              <div className={`smart glow ${result?.kind === "sent" || result?.kind === "split" ? "settled perf" : ""}`} key={intent.kind + (result?.kind ?? "")} data-testid="smart-card">{card}</div>
               <div className="chips" role="group" aria-label="Try typing">
                 {tries.map((t) => <button type="button" key={t} onClick={() => { setText(t); inputRef.current?.focus(); }}>{t.length > 26 ? t.slice(0, 24) + "…" : t}</button>)}
               </div>

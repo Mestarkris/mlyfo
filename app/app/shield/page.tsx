@@ -1,3 +1,5 @@
+import Icon from "@/components/Icon";
+import Avatar from "@/components/Avatar";
 import { currentUser } from "@/lib/auth";
 import { contacts, linkScans } from "@/lib/queries";
 import { AddressCheck, LinkScan, AddContact, RemoveContact } from "@/components/ShieldTools";
@@ -22,7 +24,7 @@ export default async function Shield() {
           <LinkScan enabled={!!u.shield_links} />
           {scans.length > 0 && <div className="list" style={{ marginTop: 16 }}>
             {scans.map((s) => (
-              <div className="li" key={s.id}><div className="ava">{s.source === "kane" ? "✓" : "⌁"}</div>
+              <div className="li" key={s.id}><span className="ava"><Icon name="link" /></span>
                 <div className="addr" style={{ fontFamily: "inherit" }}>{s.url}<small>{s.source === "kane" ? "Deep scan by Kane" : "Quick check"}</small></div>
                 <span className={`verdict ${s.verdict}`}>{s.verdict}</span></div>
             ))}
@@ -32,7 +34,7 @@ export default async function Shield() {
           <div className="list">
             {cs.length === 0 && <div className="empty">No contacts yet. Save someone you pay often.</div>}
             {cs.map((c) => (
-              <div className="li" key={c.id}><div className="ava">{c.emoji}</div><div>{c.label}<small className="addr">{c.address}</small></div><RemoveContact id={c.id} /></div>
+              <div className="li" key={c.id}><Avatar name={c.label} /><div>{c.label}<small className="addr">{c.address}</small></div><RemoveContact id={c.id} /></div>
             ))}
           </div>
           <AddContact />

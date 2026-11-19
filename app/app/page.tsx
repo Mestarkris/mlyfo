@@ -4,6 +4,9 @@ import { spentToday, fmt } from "@/lib/money";
 import { activity, pendingConfirmations, splitsFor, blockedCount } from "@/lib/queries";
 import { FaucetButton, ConfirmPayment } from "@/components/Widgets";
 import { readResults } from "@/lib/verify";
+import Receipt from "@/components/Receipt";
+import Avatar from "@/components/Avatar";
+import Icon from "@/components/Icon";
 
 export default async function Overview({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const u = (await currentUser())!;
@@ -19,12 +22,11 @@ export default async function Overview({ searchParams }: { searchParams: Promise
   ] as const;
   const done = steps.filter((s) => s[1]).length;
   const kane = readResults();
-  const greet = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <>
       <div className="main-top">
-        <h1>{welcome ? `Welcome, ${u.name.split(" ")[0]}` : `${greet}, ${u.name.split(" ")[0]}`}</h1>
+        <h1>{welcome ? `Welcome, ${u.name.split(" ")[0]}` : "Overview"}</h1>
         <Link className="btn btn-ghost btn-sm" href="/app/pad">Open Mlyfo Pad</Link>
         <Link className="btn btn-ink btn-sm" href="/app/splits">New split</Link>
       </div>
@@ -42,61 +44,63 @@ export default async function Overview({ searchParams }: { searchParams: Promise
       {pending.length > 0 && (
         <div className="c" style={{ marginTop: 18 }}>
           <h3>Waiting for your confirmation</h3>
-          {pending.map((p) => <ConfirmPayment key={p.id} id={p.id} amount={p.amount_cents} to={p.other} reason={p.reason} />)}
+          {pending.slice(0, 2).map((p) => <ConfirmPayment key={p.id} id={p.id} amount={p.amount_cents} to={p.other} reason={p.reason} />)}
+          {pending.length > 2 && <div className="sub" style={{ marginTop: 12 }}>{pending.length - 2} more waiting. Confirm these first to see them</div>}
         </div>
       )}
 
-      <div className="grid">
+      <div className="dgrid">
         <div className="c wallet">
-          <h3>Wallet balance <span className="chip grey">Demo USDC</span></h3>
-          <div className="big-num" data-testid="balance">{fmt(u.balance_cents)}</div>
-          <div className="sub addr" title={u.address}>{u.address.slice(0, 6)}…{u.address.slice(-6)}</div>
-          <div style={{ marginTop: 12 }}><FaucetButton /></div>
-        </div>
-        <div className="c">
-          <h3>Spent today</h3>
-          <div className="big-num">{fmt(today)}</div>
-          <div className="meter"><i style={{ width: pct + "%", background: pct >= 100 ? "var(--amber)" : undefined }} /></div>
-          <div className="meter-l"><span>{pct}% used</span><span>{fmt(u.daily_limit_cents)} limit</span></div>
-        </div>
-        <div className="c">
-          <h3>Shield <Link href="/app/shield" style={{ color: "var(--teal-ink)", fontSize: 14 }}>Open</Link></h3>
-          <div className="big-num">{blocked}</div>
-          <div className="sub">risky payments and links stopped</div>
-        </div>
-
-        <div className="c span2">
-          <h3>Your splits <Link href="/app/splits" style={{ color: "var(--teal-ink)", fontSize: 14 }}>View all</Link></h3>
-          <div className="list">
-            {splits.length === 0 && <div className="empty">No splits yet. Type “split 60 / 3” in Mlyfo Pad to make your first one.</div>}
-            {splits.map((s) => {
-              const paid = s.shares.filter((x) => x.paid_at).length;
-              return (
-                <div className="li" key={s.id}><div className="ava split-ava" aria-hidden>÷</div>
-                  <div>{s.title}<small>{fmt(s.total_cents)} split {s.shares.length} ways</small></div>
-                  <span className={`chip ${paid === s.shares.length ? "" : "grey"}`}>{paid} of {s.shares.length} paid</span>
-                </div>
-              );
-            })}
+          <h3>Wallet balance <span className="meta">Demo USDC</span></h3>
+          <div className="big-num num" data-testid="balance">{fmt(u.balance_cents)}</div>
+          <div className="wallet-foot">
+            <span className="addr" title={u.address}>{u.address.slice(0, 6)}…{u.address.slice(-6)}</span>
+            <FaucetButton />
           </div>
         </div>
         <div className="c">
-          <h3>Verified by Kane <Link href="/app/verified" style={{ color: "var(--teal-ink)", fontSize: 14 }}>Details</Link></h3>
-          {kane ? (<>
-            <div className="big-num">{kane.passed}/{kane.total}</div>
-            <div className="sub">money flows passed in a real browser{kane.finishedAt ? `, ${new Date(kane.finishedAt).toLocaleDateString()}` : ""}</div>
-          </>) : <div className="empty">No Kane run yet. Run <code>npm run verify</code>.</div>}
+          <h3>Spent today</h3>
+          <div className="big-num num">{fmt(today)}</div>
+          <div className="meter"><i style={{ width: pct + "%", background: pct >= 100 ? "var(--amber)" : undefined }} /></div>
+          <div className="meter-l num"><span>{pct}% of limit</span><span>{fmt(u.daily_limit_cents)} limit</span></div>
         </div>
 
-        <div className="c span2">
+        <div className="c">
+          <h3>Your splits <Link href="/app/splits">View all</Link></h3>
+          {splits.length === 0 ? <div className="empty">No splits yet. Type “split 60 / 3” in Mlyfo Pad to make your first one.</div> : (
+            <div className="slips">
+              {splits.slice(0, 2).map((s) => (
+                <Receipt key={s.id} size="sm" title={s.title} totalCents={s.total_cents}
+                  rows={s.shares.map((x) => ({ name: x.is_owner ? "You" : x.label.charAt(0).toUpperCase() + x.label.slice(1), cents: x.amount_cents, state: x.is_owner ? "you" : x.paid_at ? "paid" : "sent" }))} />
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="stack-2">
+          <div className="c">
+            <h3>Shield <Link href="/app/shield">Open</Link></h3>
+            <div className="big-num num">{blocked}</div>
+            <div className="sub">risky payments and links stopped</div>
+          </div>
+          <div className="c">
+            <h3>Verified by Kane <Link href="/app/verified">Details</Link></h3>
+            {kane ? (<>
+              <div className="big-num num">{kane.passed}/{kane.total}</div>
+              <div className="sub">money flows passed in a real browser{kane.finishedAt ? `, ${new Date(kane.finishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : ""}</div>
+            </>) : <div className="empty">No Kane run yet. Run <code>npm run verify</code></div>}
+          </div>
+        </div>
+
+        <div className="c">
           <h3>Recent activity</h3>
           <div className="list">
-            {acts.length === 0 && <div className="empty">Nothing yet. Your payments will show up here.</div>}
+            {acts.length === 0 && <div className="empty">Nothing yet. Your payments will show up here</div>}
             {acts.map((a) => (
-              <div className="li" key={a.id}><div className="ava">{a.status === "blocked" ? "⚠︎" : a.emoji}</div>
+              <div className="li" key={a.id}>
+                {a.status === "blocked" ? <span className="ava warn-ava"><Icon name="shield" /></span> : <Avatar name={a.other.replace(/^@/, "")} />}
                 <div>{a.status === "blocked" ? `Stopped by Shield: ${a.other}` : a.kind === "in" ? `${a.other} paid you` : `To ${a.other}`}
-                  <small>{a.status === "needs_confirmation" ? "Waiting for confirmation" : a.note || new Date(a.created_at + "Z").toLocaleString()}</small></div>
-                <span className="amt" style={{ color: a.status === "blocked" ? "var(--amber)" : a.kind === "in" ? "var(--teal-ink)" : undefined }}>
+                  <small>{a.status === "needs_confirmation" ? "Waiting for confirmation" : a.note || new Date(a.created_at + "Z").toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</small></div>
+                <span className="amt num" style={{ color: a.status === "blocked" ? "var(--amber)" : a.kind === "in" ? "var(--teal-ink)" : undefined }}>
                   {a.kind === "in" ? "+" : a.status === "sent" ? "−" : ""}{fmt(a.amount_cents)}</span>
               </div>
             ))}
@@ -104,7 +108,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
         </div>
         <div className="c">
           <h3>Your Mlyfo address</h3>
-          <div className="sub" style={{ marginTop: 10 }}>Friends can pay <b>@{u.handle}</b>, or this address:</div>
+          <div className="sub" style={{ marginTop: 8 }}>Friends can pay <b>@{u.handle}</b>, or this address:</div>
           <div className="addr" style={{ marginTop: 8 }}>{u.address}</div>
         </div>
       </div>

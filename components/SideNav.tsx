@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
+import Avatar from "./Avatar";
 
 const P = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 const ICONS: Record<string, React.ReactNode> = {
@@ -29,7 +30,7 @@ export default function SideNav({ name, handle }: { name: string; handle: string
           <Link key={href} href={href} className={path === href ? "on" : ""}><span className="ico">{ICONS[ico]}</span>{label}</Link>
         ))}
         <div className="user">
-          <div className="ava">🙂</div>
+          <Avatar name={name} />
           <div style={{ minWidth: 0 }}><b>{name}</b><small>@{handle}</small>
             <button className="linklike" onClick={logout}>Sign out</button>
           </div>

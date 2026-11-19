@@ -1,4 +1,5 @@
 "use client";
+import Icon from "./Icon";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "./api";
@@ -43,7 +44,7 @@ export function CopyLink({ token }: { token: string }) {
 export function PayShare({ token, amount, owner }: { token: string; amount: number; owner: string }) {
   const router = useRouter();
   const [state, setState] = useState<"" | "busy" | "paid">(""); const [err, setErr] = useState("");
-  if (state === "paid") return <div className="mini ok" data-testid="share-paid"><span>✓</span><span><b>Paid {money(amount)} to @{owner}.</b> They’ll see it in their split right away.</span></div>;
+  if (state === "paid") return <div className="mini ok" data-testid="share-paid"><Icon name="check" /><span><b>Paid {money(amount)} to @{owner}.</b> They’ll see it in their split right away.</span></div>;
   return (<>
     <button className="btn btn-teal btn-full" style={{ marginTop: 20 }} disabled={state === "busy"} onClick={async () => {
       setState("busy"); setErr("");

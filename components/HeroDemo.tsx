@@ -1,4 +1,5 @@
 "use client";
+import Avatar from "./Avatar";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Scenario = {
@@ -19,7 +20,7 @@ function SplitCard() {
       <div className="smart-title">$59.00 each</div>
       <div className="people">
         {ppl.map((p, i) => (
-          <div key={p} className={`person ${i <= paid ? "paid flip" : ""}`}><b>{p}</b>{i === 0 ? "covered" : i <= paid ? "paid" : "sent"}</div>
+          <div key={p} className={`person ${i <= paid ? "paid" : ""}`}><b>{p}</b>{i === 0 ? "covered" : i <= paid ? "paid" : "sent"}</div>
         ))}
       </div>
       <div className="smart-actions"><span className="btn btn-ink">Send requests</span><span className="btn btn-ghost">Edit split</span></div>
@@ -119,13 +120,6 @@ export default function HeroDemo() {
     return () => removeEventListener("keydown", onKey);
   }, [press]);
 
-  const tilt = (e: React.MouseEvent) => {
-    if (reduce.current || !phone.current) return;
-    const r = phone.current.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-    phone.current.style.transform = `perspective(1400px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
-  };
-  const untilt = () => { if (phone.current) phone.current.style.transform = ""; };
 
   const s = SCENARIOS[i];
   return (
@@ -135,22 +129,22 @@ export default function HeroDemo() {
         <div className="scen">
           {SCENARIOS.map((x, k) => (
             <button key={k} aria-pressed={k === i} onClick={() => { auto.current = false; setI(k); }}>
-              <span className="em">{x.em}</span><span>{x.thread[x.thread.length - 1].slice(0, 46)}</span><span className="tag">{x.tag}</span>
+              <Avatar name={x.who} size={28} /><span>{x.thread[x.thread.length - 1].slice(0, 46)}</span><span className="tag">{x.tag}</span>
             </button>
           ))}
         </div>
       </div>
-      <div className="stage" onMouseMove={tilt} onMouseLeave={untilt}>
+      <div className="stage">
         <div className="phone dark" ref={phone}>
           <div className="screen">
             <div className="island" />
             <div className="status"><span>9:41</span><span>5G 87%</span></div>
-            <div className="chat-head"><span className="back" aria-hidden>‹</span><div className="who"><div className="ava">{s.em}</div><span className="name-pill">{s.who} ›</span></div><span /></div>
+            <div className="chat-head"><span className="back" aria-hidden>‹</span><div className="who"><Avatar name={s.who} /><span className="name-pill">{s.who} ›</span></div><span /></div>
             <div className="msgs">
               {shown.map((m, k) => <div key={i + "-" + k} className="b in">{m}</div>)}
               {typing && <div className="b in typing" aria-label="typing"><i /><i /><i /></div>}
             </div>
-            <div className="input-row"><div className="field">{typed ? <span>{typed}</span> : <span className="ph">{s.who === "Unknown" ? "Message" : `Message ${s.who}`}</span>}<i className="caret" /></div></div>
+            <div className="input-row"><div className="field">{typed ? <span>{typed}</span> : <span className="ph">{s.who === "Unknown" ? "Message" : `Message ${s.who.replace("?", "")}`}</span>}<i className="caret" /></div></div>
             <div className="kb">
               <div key={cardKey} className={`smart ${showCard ? "glow" : "swap"}`}>{showCard ? s.card : null}</div>
               <div className="toolbar">
