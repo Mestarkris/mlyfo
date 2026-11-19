@@ -141,11 +141,11 @@ export default function HeroDemo() {
         </div>
       </div>
       <div className="stage" onMouseMove={tilt} onMouseLeave={untilt}>
-        <div className="phone" ref={phone}>
+        <div className="phone dark" ref={phone}>
           <div className="screen">
             <div className="island" />
             <div className="status"><span>9:41</span><span>5G 87%</span></div>
-            <div className="chat-head"><div className="ava">{s.em}</div><div><b>{s.who}</b><small>Messages</small></div></div>
+            <div className="chat-head"><span className="back" aria-hidden>‹</span><div className="who"><div className="ava">{s.em}</div><span className="name-pill">{s.who} ›</span></div><span /></div>
             <div className="msgs">
               {shown.map((m, k) => <div key={i + "-" + k} className="b in">{m}</div>)}
               {typing && <div className="b in typing" aria-label="typing"><i /><i /><i /></div>}

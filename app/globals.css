@@ -473,3 +473,97 @@ footer{border-top:1px solid var(--line);padding-top:28px}
   section{padding:72px 0}
 }
 .field .ph{color:var(--mute);order:2;margin-left:2px}.field{gap:0}
+
+/* ================= Phone (dark, like the phone's own Messages) ================= */
+.phone.dark{background:#0B0B0D;box-shadow:0 50px 90px -40px rgba(28,29,38,.55),0 0 0 1px #2A2B31,inset 0 0 0 1.5px #3A3B42;padding:11px}
+.phone.dark .screen{background:#000;color:#F2F2F5;box-shadow:none}
+.phone.dark .island{background:#0B0B0D}
+.phone.dark .status{color:#fff}
+.phone.dark .chat-head{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;justify-items:center;border-bottom:0;padding:12px 10px 8px;background:linear-gradient(#000 70%,rgba(0,0,0,0))}
+.phone.dark .who{display:flex;flex-direction:column;align-items:center;gap:4px}
+.phone.dark .ava{background:#2C2C30;width:40px;height:40px;font-size:19px}
+.phone.dark .name-pill{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:#1C1C1F;color:#fff}
+.phone.dark .back{all:unset;cursor:pointer;color:#6F7BFF;font-size:34px;line-height:1;padding:0 10px;justify-self:start}
+.phone.dark .back:focus-visible{outline:2px solid #6F7BFF;border-radius:8px}
+.phone.dark .msgs{gap:5px;padding:6px 12px 10px;overflow-y:auto;justify-content:flex-start;scrollbar-width:none}
+.phone.dark .msgs>:first-child{margin-top:auto}
+.phone.dark .b{font-size:15px;line-height:1.3;padding:8px 13px}
+.phone.dark .b.in{background:#262629;color:#F2F2F5}
+.phone.dark .b.out{background:var(--teal);color:#fff}
+.phone.dark .b a{color:inherit;text-decoration:underline;word-break:break-all}
+.phone.dark .typing i{background:#8E8E93}
+.phone.dark .input-row{padding:6px 10px 8px;gap:8px;background:#000}
+.phone.dark .field{flex:1;min-width:0;height:36px;min-height:36px;border:1px solid #3A3A3F;border-radius:18px;padding:0 14px;font-size:15px;background:#000;color:#fff}
+.phone.dark input.field::placeholder{color:#7C7C83}
+.phone.dark input.field:focus{outline:none;border-color:#6F7BFF}
+.phone.dark .field .ph{color:#7C7C83}
+.phone.dark .send{all:unset;cursor:pointer;width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.phone.dark .send[disabled]{background:#2C2C30;color:#6B6B72;cursor:default}
+
+/* dark keyboard */
+.phone.dark .kb{background:#1B1B1E;padding:8px 4px 16px}
+.phone.dark .k{background:#6B6B70;color:#fff;box-shadow:0 1px 0 #0A0A0B;border:0;cursor:pointer;height:40px;font-size:18px}
+.phone.dark .k.fn{background:#3E3E42;color:#fff;box-shadow:0 1px 0 #0A0A0B}
+.phone.dark .k.space{color:#D8D8DC;font-size:13px}
+.phone.dark .k.mly{background:#6B6B70;color:#fff}
+.phone.dark .k.mly::after{box-shadow:0 0 0 2px #6B6B70;background:#7D89FF}
+.phone.dark .k.ret{background:var(--teal)}
+.phone.dark .k.down,.phone.dark .k:active{background:#8A8A90}
+.phone.dark .row{gap:5px;margin-top:9px}
+.phone.dark .tool{background:#2C2C30;color:#C9C9CF}
+.phone.dark .tool.on,.phone.dark .tool:hover:not([disabled]){background:#48484D;color:#fff;box-shadow:none}
+
+/* the Mlyfo card sits on the dark keyboard */
+.phone.dark .smart{background:#2C2C30;color:#F2F2F5;box-shadow:0 1px 0 #0A0A0B;min-height:0}
+.phone.dark .smart-top{color:#A1A1A8}
+.phone.dark .smart-sub{color:#B4B4BB}
+.phone.dark .smart-title{color:#fff}
+.phone.dark .chip{background:rgba(111,123,255,.18);color:#AEB5FF}
+.phone.dark .chip.warn{background:rgba(255,92,122,.16);color:#FF8DA3}
+.phone.dark .chip.grey{background:#3A3A3F;color:#C9C9CF}
+.phone.dark .btn-ink{background:#fff;color:#000}
+.phone.dark .btn-ink:hover{background:#E6E6EA}
+.phone.dark .btn-teal{background:var(--teal);color:#fff}
+.phone.dark .btn-ghost{background:transparent;border-color:#4A4A50;color:#fff}
+.phone.dark .person{background:#3A3A3F;color:#B4B4BB}
+.phone.dark .person b{color:#fff}
+.phone.dark .person.paid{background:rgba(111,123,255,.22);color:#C3C8FF}
+.phone.dark .mini.warn{background:rgba(255,92,122,.14);color:#FFC2CE}
+.phone.dark .mini.warn b{color:#FF8DA3}
+.phone.dark .row-form{margin-top:10px}
+.phone.dark .row-form input{background:#1B1B1E;border-color:#4A4A50;color:#fff;height:36px}
+.phone.dark .row-form input::placeholder{color:#7C7C83}
+.phone.dark .addr .x{background:rgba(255,92,122,.25);color:#FF8DA3}
+.phone.dark .model-tag{color:#AEB5FF}
+.phone.dark .err{color:#FF8DA3}
+.phone.dark .smart-actions .btn{height:32px}
+
+/* suggestion chips above the keys */
+.phone.dark .chips{display:flex;gap:6px;overflow-x:auto;padding:8px 3px 2px;scrollbar-width:none}
+.phone.dark .chips button{flex:none;border:0;cursor:pointer;height:28px;padding:0 11px;border-radius:999px;background:#2C2C30;color:#D8D8DC;font-size:12.5px}
+.phone.dark .chips button:hover{background:#3A3A3F;color:#fff}
+
+/* chat list screen */
+.chatlist{flex:1;overflow-y:auto;padding:10px 0 20px}
+.chatlist-title{font-size:32px;letter-spacing:-.03em;padding:8px 18px 10px;color:#fff}
+.chatlist-row{all:unset;cursor:pointer;display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center;padding:10px 18px;width:100%;box-sizing:border-box}
+.chatlist-row:hover{background:#121214}
+.chatlist-row:focus-visible{outline:2px solid #6F7BFF;outline-offset:-2px}
+.chatlist-row .ava{width:48px;height:48px;font-size:22px}
+.chatlist-text{min-width:0;border-bottom:1px solid #1E1E21;padding-bottom:12px}
+.chatlist-text b{display:block;color:#fff;font-size:16px}
+.chatlist-text small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#8E8E93;font-size:14px;line-height:1.3}
+
+/* Pad page */
+.pad-lede{margin-top:8px;max-width:60ch}
+.pad-stage{display:grid;grid-template-columns:auto minmax(0,320px);gap:48px;align-items:start;justify-content:center;margin-top:28px}
+.pad-phone{width:min(400px,calc(100vw - 32px));aspect-ratio:auto;height:min(860px,calc(100vh - 40px));min-height:720px}
+.pad-notes{position:sticky;top:28px;display:grid;gap:12px;color:var(--slate);font-size:15px;padding-top:24px}
+.pad-notes b{color:var(--ink)}
+@media (max-width:960px){
+  .pad-stage{grid-template-columns:1fr;justify-items:center;gap:20px}
+  .pad-notes{position:static;padding:0;max-width:400px}
+}
+.pad-phone{height:clamp(700px,calc(100vh - 170px),840px)}
+.chatlist-text small{word-break:break-all}
+@media (max-width:960px){.mobile-tabs a{display:inline-flex;align-items:center;height:34px;padding:0 14px}}

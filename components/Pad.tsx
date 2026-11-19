@@ -22,6 +22,8 @@ type Ai = { text: string; intent: Intent; source: "model" | "rules" };
 export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: string; aiModel: string | null }) {
   const router = useRouter();
   const [fi, setFi] = useState(0);
+  const [screen, setScreen] = useState<"list" | "chat">("chat");
+  const msgsRef = useRef<HTMLDivElement>(null);
   const friend = friends[fi];
   const [threads, setThreads] = useState<Record<string, Msg[]>>(() => Object.fromEntries(friends.map((f) => [f.handle, [{ from: "them", text: f.opener }]])));
   const [text, setText] = useState("");
@@ -70,7 +72,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
 
   // A new chat clears the card. A new suggestion clears it too, except a success message,
   // which stays until the user starts typing again.
-  useEffect(() => { setResult(null); }, [fi]);
+  useEffect(() => { setResult(null); setText(""); }, [fi]);
   useEffect(() => { setResult((r) => (r?.kind === "sent" && text === "" ? r : null)); }, [intent.kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const push = (m: Msg) => setThreads((t) => ({ ...t, [friend.handle]: [...t[friend.handle], m] }));
@@ -192,67 +194,80 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
     }
   })();
 
+  useEffect(() => { msgsRef.current?.scrollTo({ top: msgsRef.current.scrollHeight }); }, [msgs.length, screen, fi]);
+
+  const tries = [`split 236 / 4`, `pay @${friend.handle} 20 for lunch`, `pay @${friend.handle} 150 for rent`, `send 10 usdc to AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx`];
+  const key = (c: string, extra = "") => (
+    <button type="button" key={c} tabIndex={-1} className={`k ${extra} ${down === c ? "down" : ""}`}
+      onClick={() => { setText((t) => t + c); press(c); inputRef.current?.focus(); }}>{c}</button>
+  );
+
   return (
-    <div className="pad">
-      <div className="pad-chat">
-        <div className="chat-head"><div className="ava">{friend.emoji}</div><div><b>{friend.name}</b><small>@{friend.handle}</small></div></div>
-        <div className="msgs" data-testid="pad-messages">
-          {msgs.map((m, k) => (
-            <div key={k} className={`b ${m.from === "me" ? "out" : "in"}`}>{m.text}{m.link && <> <a href={m.link} style={{ textDecoration: "underline" }}>{(typeof location !== "undefined" ? location.host : "") + m.link}</a></>}</div>
-          ))}
-        </div>
-        <form className="pad-input" onSubmit={sendText}>
-          <input ref={inputRef} aria-label="Message" data-testid="pad-input" placeholder={`Message ${friend.name.split(" ")[0]}`} value={text}
-            onChange={(e) => setText(e.target.value)} onKeyDown={(e) => press(e.key.toLowerCase())} />
-          <button className="btn btn-ink btn-sm">Send</button>
-        </form>
-        <div className="kb">
-          <div className="smart glow" key={intent.kind + (result?.kind ?? "")} data-testid="smart-card">{card}</div>
-          {aiModel && (
-            <div className="toolbar" role="group" aria-label="Rewrite with Claude">
-              {(["tidy", "warm", "brief"] as const).map((t) => (
-                <button type="button" key={t} className="tool" disabled={!text.trim() || !!rewriting} onClick={() => tone(t)}>
-                  {rewriting === t ? "Rewriting…" : t === "tidy" ? "Tidy" : t === "warm" ? "Warmer" : "Shorter"}
+    <div className="pad-stage">
+      <div className="phone dark pad-phone">
+        <div className="screen">
+          <div className="island" />
+          <div className="status"><span>9:41</span><span>5G 87%</span></div>
+
+          {screen === "list" ? (
+            <div className="chatlist">
+              <h2 className="chatlist-title">Messages</h2>
+              {friends.map((f, k) => (
+                <button key={f.handle} className="chatlist-row" onClick={() => { setFi(k); setScreen("chat"); }} data-testid={`chat-${f.handle}`}>
+                  <span className="ava">{f.emoji}</span>
+                  <span className="chatlist-text"><b>{f.name.split(" ")[0]}</b><small>{threads[f.handle].at(-1)!.text}</small></span>
                 </button>
               ))}
             </div>
-          )}
-          {ROWS.map((r, ri) => (
-            <div className="row" key={r}>
-              {ri === 2 && <div className="k fn">⇧</div>}
-              {[...r].map((c) => <button type="button" key={c} className={`k ${down === c ? "down" : ""}`} style={{ border: 0, cursor: "pointer" }} tabIndex={-1}
-                onClick={() => { setText((t) => t + c); press(c); inputRef.current?.focus(); }}>{c}</button>)}
-              {ri === 2 && <button type="button" tabIndex={-1} className="k fn" style={{ border: 0, cursor: "pointer" }} onClick={() => setText((t) => t.slice(0, -1))}>⌫</button>}
+          ) : (<>
+            <div className="chat-head">
+              <button type="button" className="back" onClick={() => setScreen("list")} aria-label="All chats">‹</button>
+              <div className="who"><div className="ava">{friend.emoji}</div><span className="name-pill">{friend.name.split(" ")[0]} ›</span></div>
+              <span className="back-spacer" />
             </div>
-          ))}
-          <div className="row"><div className="k fn">123</div><div className="k mly">m</div>
-            <button type="button" tabIndex={-1} className={`k space ${down === " " ? "down" : ""}`} style={{ border: 0, cursor: "pointer" }} onClick={() => setText((t) => t + " ")}>space</button>
-            <button type="button" tabIndex={-1} className="k fn ret" style={{ border: 0, cursor: "pointer" }} onClick={() => sendText()}>⏎</button></div>
+            <div className="msgs" ref={msgsRef} data-testid="pad-messages">
+              {msgs.map((m, k) => (
+                <div key={k} className={`b ${m.from === "me" ? "out" : "in"}`}>{m.text}{m.link && <> <a href={m.link}>{(typeof location !== "undefined" ? location.host : "") + m.link}</a></>}</div>
+              ))}
+            </div>
+            <form className="input-row" onSubmit={sendText}>
+              <input ref={inputRef} className="field" aria-label="Message" data-testid="pad-input" placeholder={`Message ${friend.name.split(" ")[0]}`} value={text}
+                onChange={(e) => setText(e.target.value)} onKeyDown={(e) => press(e.key.toLowerCase())} />
+              <button className="send" aria-label="Send" disabled={!text.trim()}>↑</button>
+            </form>
+            <div className="kb">
+              <div className="smart glow" key={intent.kind + (result?.kind ?? "")} data-testid="smart-card">{card}</div>
+              <div className="chips" role="group" aria-label="Try typing">
+                {tries.map((t) => <button type="button" key={t} onClick={() => { setText(t); inputRef.current?.focus(); }}>{t.length > 26 ? t.slice(0, 24) + "…" : t}</button>)}
+              </div>
+              {aiModel && (
+                <div className="toolbar" role="group" aria-label="Rewrite with Claude">
+                  {(["tidy", "warm", "brief"] as const).map((t) => (
+                    <button type="button" key={t} className="tool" disabled={!text.trim() || !!rewriting} onClick={() => tone(t)}>
+                      {rewriting === t ? "Rewriting…" : t === "tidy" ? "Tidy" : t === "warm" ? "Warmer" : "Shorter"}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {ROWS.map((r, ri) => (
+                <div className="row" key={r}>
+                  {ri === 2 && <div className="k fn">⇧</div>}
+                  {[...r].map((c) => key(c))}
+                  {ri === 2 && <button type="button" tabIndex={-1} className="k fn" aria-label="Delete" onClick={() => setText((t) => t.slice(0, -1))}>⌫</button>}
+                </div>
+              ))}
+              <div className="row"><div className="k fn">123</div><div className="k mly">m</div>
+                <button type="button" tabIndex={-1} className={`k space ${down === " " ? "down" : ""}`} onClick={() => setText((t) => t + " ")}>space</button>
+                <button type="button" tabIndex={-1} className="k fn ret" aria-label="Send" onClick={() => sendText()}>⏎</button></div>
+            </div>
+          </>)}
         </div>
       </div>
-
-      <div>
-        <div className="c">
-          <h3>Chats</h3>
-          <div className="scen" style={{ marginTop: 10 }}>
-            {friends.map((f, k) => (
-              <button key={f.handle} aria-pressed={k === fi} onClick={() => setFi(k)} data-testid={`chat-${f.handle}`}>
-                <span className="em">{f.emoji}</span><span>{f.name.split(" ")[0]}<small style={{ display: "block", color: "var(--mute)", fontSize: 13 }}>{threads[f.handle].at(-1)!.text.slice(0, 40)}</small></span><span className="tag">@{f.handle}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="c" style={{ marginTop: 18 }}>
-          <h3>Try typing</h3>
-          <div className="suggest">
-            {[`split 236 / 4`, `pay @${friend.handle} 20 for lunch`, `pay @${friend.handle} 150 for rent`, `send 10 usdc to AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx`].map((s) => (
-              <button key={s} onClick={() => { setText(s); inputRef.current?.focus(); }}>{s.length > 34 ? s.slice(0, 34) + "…" : s}</button>
-            ))}
-          </div>
-          <p className="sub" style={{ marginTop: 14 }}>Signed in as @{me}. Payments use demo USDC.</p>
-          <p className="sub model-line">{aiModel ? <>Messages the patterns can’t read go to <b>{aiModel}</b>. Its answer is only a suggestion: Shield and your limits still check every payment.</> : <>The AI model is off on this server, so only the built-in patterns read messages.</>}</p>
-        </div>
-      </div>
+      <aside className="pad-notes">
+        <p>Tap <b>‹</b> to see all chats. Each friend has sent you something the keyboard can act on.</p>
+        <p>Signed in as @{me}. Payments use demo USDC.</p>
+        <p className="model-line">{aiModel ? <>Messages the patterns can’t read go to <b>{aiModel}</b>. Its answer is only a suggestion: Shield and your limits still check every payment.</> : <>The AI model is off on this server, so only the built-in patterns read messages.</>}</p>
+      </aside>
     </div>
   );
 }
