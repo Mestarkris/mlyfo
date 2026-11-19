@@ -47,7 +47,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
       )}
 
       <div className="grid">
-        <div className="c">
+        <div className="c wallet">
           <h3>Wallet balance <span className="chip grey">Demo USDC</span></h3>
           <div className="big-num" data-testid="balance">{fmt(u.balance_cents)}</div>
           <div className="sub addr" title={u.address}>{u.address.slice(0, 6)}…{u.address.slice(-6)}</div>
@@ -72,7 +72,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
             {splits.map((s) => {
               const paid = s.shares.filter((x) => x.paid_at).length;
               return (
-                <div className="li" key={s.id}><div className="ava">⟗</div>
+                <div className="li" key={s.id}><div className="ava split-ava" aria-hidden>÷</div>
                   <div>{s.title}<small>{fmt(s.total_cents)} split {s.shares.length} ways</small></div>
                   <span className={`chip ${paid === s.shares.length ? "" : "grey"}`}>{paid} of {s.shares.length} paid</span>
                 </div>

@@ -22,7 +22,7 @@ export default async function PayPage({ params }: { params: Promise<{ token: str
         <h1 style={{ fontSize: 32, marginTop: 4 }}>{sh.title}</h1>
         <div className="big-num" style={{ fontSize: 48 }}>{fmt(sh.amount_cents)}</div>
         <div className="sub">{fmt(sh.total_cents)} split {sh.n} ways, for {sh.label}</div>
-        <div className="mini ok"><span>⛉</span><span>Shield checked: this request comes from @{sh.handle}’s verified Mlyfo account.</span></div>
+        <div className="mini ok"><span aria-hidden>✓</span><span>Shield checked: this request comes from @{sh.handle}’s verified Mlyfo account.</span></div>
         {sh.paid_at ? <div className="mini ok" data-testid="share-paid"><span>✓</span><span><b>Already paid.</b> Nothing more to do.</span></div>
           : me ? <PayShare token={token} amount={sh.amount_cents} owner={sh.handle} />
           : <Link className="btn btn-ink btn-full" style={{ marginTop: 20 }} href={`/signin?next=/pay/${token}`}>Sign in to pay</Link>}

@@ -13,7 +13,7 @@ const MORE: [string, string, boolean][] = [
   ["Repeat payments", "“Rent on the 1st” sets up a monthly USDC payment.", true],
   ["Scam message check", "Flags “verify your wallet” style messages while you read them.", true],
   ["AI with a budget", "Let the assistant buy things for you, never more than you allow.", true],
-  ["Rewrite", "Fix tone and typos on anything you’ve written.", false],
+  ["Rewrite with Claude", "Tidy, warm up or shorten a message before you send it.", true],
   ["Translate", "Reply in the other person’s language as you type.", false],
   ["Plans and places", "Find a time, add a Meet link and suggest somewhere to meet.", false],
   ["Swap and prices", "Swap through Jupiter and paste live prices for $SOL or $AAPL.", false],
@@ -89,14 +89,14 @@ export default async function Home() {
         </div></section>
 
         <div className="works"><div className="wrap">
-          <span>Works with</span><span>Solana</span><span>USDC</span><span>Jupiter</span><span>Seed Vault</span><span>Phantom</span><span>Google Calendar</span><span>Google Meet</span><span>Kane CLI</span>
+          <span>Works with</span><span>Solana</span><span>USDC</span><span>Jupiter</span><span>Seed Vault</span><span>Phantom</span><span>Google Calendar</span><span>Google Meet</span><span>Claude</span><span>Kane CLI</span>
         </div></div>
 
         <section id="security"><div className="wrap">
           <div className="sec-head"><h2>Your keys never leave your wallet.</h2></div>
           <div className="sec-grid">
             <div><h3>Mlyfo can’t hold your funds</h3><p>Payments are signed in your own wallet or Seed Vault. We never see a private key.</p></div>
-            <div><h3>Your typing stays yours</h3><p>Normal typing stays on the phone. Mlyfo only reads text after you tap one of its actions.</p></div>
+            <div><h3>Your typing stays yours</h3><p>Ordinary typing stays on the phone. Only messages about money, or ones you ask to rewrite, go to Claude to be read, and nothing moves until you tap.</p></div>
             <div><h3>You set the rules</h3><p>Limits, trusted contacts and Shield settings sync from your dashboard to every device you use.</p></div>
           </div>
         </div></section>

@@ -17,7 +17,9 @@ type Result =
 
 const ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
 
-export default function Pad({ friends, me }: { friends: Friend[]; me: string }) {
+type Ai = { text: string; intent: Intent; source: "model" | "rules" };
+
+export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: string; aiModel: string | null }) {
   const router = useRouter();
   const [fi, setFi] = useState(0);
   const friend = friends[fi];
@@ -31,12 +33,40 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
 
   // What the keyboard suggests: from what you're typing first, otherwise from their last message.
   const lastTheirs = [...msgs].reverse().find((m) => m.from === "them")?.text ?? "";
+  // When the patterns can't read a message, the language model gets a go (debounced).
+  const [ai, setAi] = useState<Ai | null>(null);
+  const [thinking, setThinking] = useState(false);
+  const [rewriting, setRewriting] = useState<string | null>(null);
+  useEffect(() => {
+    const t = text.trim();
+    if (!aiModel || t.length < 8 || parseIntent(t).kind !== "none" || !/\d|\$|https?:|send|pay|owe|split/i.test(t)) { setThinking(false); return; }
+    if (ai?.text === t) return;
+    setThinking(true);
+    const ctl = new AbortController();
+    const h = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/ai/intent", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text: t, from: "me" }), signal: ctl.signal });
+        const d = await r.json();
+        if (r.ok) setAi({ text: t, intent: d.intent, source: d.source });
+      } catch {} finally { if (!ctl.signal.aborted) setThinking(false); }
+    }, 650);
+    return () => { clearTimeout(h); ctl.abort(); };
+  }, [text, aiModel]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const typedIntent: Intent = useMemo(() => {
+    const t = text.trim();
+    const rules = parseIntent(t);
+    if (rules.kind !== "none") return rules;
+    return ai && ai.text === t ? ai.intent : { kind: "none" };
+  }, [text, ai]);
+  const fromModel = typedIntent.kind !== "none" && parseIntent(text.trim()).kind === "none";
+
   const intent: Intent = useMemo(() => {
-    const mine = parseIntent(text);
+    const mine = typedIntent;
     if (mine.kind !== "none") return mine;
     const theirs = parseIntent(lastTheirs);
     return theirs.kind === "split" || theirs.kind === "request" || theirs.kind === "link" || theirs.kind === "address" ? theirs : { kind: "none" };
-  }, [text, lastTheirs]);
+  }, [typedIntent, lastTheirs]);
 
   // A new chat clears the card. A new suggestion clears it too, except a success message,
   // which stays until the user starts typing again.
@@ -97,8 +127,16 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
   function sendText(e?: React.FormEvent) {
     e?.preventDefault();
     if (!text.trim()) return;
-    if (intent.kind !== "none" && parseIntent(text).kind !== "none") return void act();
+    if (intent.kind !== "none" && typedIntent.kind !== "none") return void act();
     push({ from: "me", text }); setText("");
+  }
+
+  async function tone(t: "tidy" | "warm" | "brief") {
+    if (!text.trim()) return;
+    setRewriting(t);
+    const r = await api("/api/ai/rewrite", "POST", { text, tone: t });
+    setRewriting(null);
+    if (r.ok) { setText(r.data.text); inputRef.current?.focus(); }
   }
 
   const card = (() => {
@@ -129,11 +167,11 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
       }
     }
     switch (intent.kind) {
-      case "split": return (<><div className="smart-top"><span className="chip">Split</span>{intent.people} people</div>
+      case "split": return (<><div className="smart-top"><span className="chip">Split</span>{intent.people} people{fromModel && <ModelTag />}</div>
         <div className="smart-title">{money(Math.floor(intent.totalCents / intent.people))} each</div>
         <div className="smart-sub">Creates a payment link for each person and tracks who has paid.</div>
         <div className="smart-actions"><button className="btn btn-ink" disabled={busy} onClick={act}>{busy ? "Creating…" : "Create split links"}</button></div></>);
-      case "pay": return (<><div className="smart-top"><span className="chip">Pay</span>Shield checks first</div>
+      case "pay": return (<><div className="smart-top"><span className="chip">Pay</span>Shield checks first{fromModel && <ModelTag />}</div>
         <div className="smart-title">Send {money(intent.amountCents)} to {intent.to.length > 20 ? intent.to.slice(0, 6) + "…" + intent.to.slice(-4) : intent.to.replace(/^@?/, "@")}</div>
         {intent.note && <div className="smart-sub">For {intent.note}</div>}
         <div className="smart-actions"><button className="btn btn-teal" disabled={busy} onClick={act}>{busy ? "Sending…" : `Pay ${money(intent.amountCents)}`}</button></div></>);
@@ -146,8 +184,11 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
       case "link": return (<><div className="smart-top"><span className="chip warn">Shield</span>Link in chat</div>
         <div className="smart-title">Check this link before opening</div>
         <div className="smart-actions"><button className="btn btn-ink" disabled={busy} onClick={act}>{busy ? "Checking…" : "Quick check"}</button><button className="btn btn-teal" disabled={busy} onClick={() => deepScan(intent.url)}>Deep scan with Kane</button></div></>);
-      default: return (<><div className="smart-top"><span className="chip grey">Mlyfo</span>Ready</div>
-        <div className="smart-title" style={{ fontSize: 16 }}>Type “split 60 / 3”, “pay @{friend.handle} 20 for lunch” or paste an address or link.</div></>);
+      default: return thinking
+        ? (<><div className="smart-top"><span className="chip grey">Claude</span>Reading your message</div>
+          <div className="smart-title quiet" aria-live="polite"><span className="typing" aria-hidden><i /><i /><i /></span></div></>)
+        : (<><div className="smart-top"><span className="chip grey">Mlyfo</span>{aiModel ? "Claude reads what you type" : "Ready"}</div>
+          <div className="smart-title quiet">{aiModel ? <>Write it how you’d say it: “can you cover half the cab, it was 18”, or paste an address or link.</> : <>Type “split 60 / 3”, “pay @{friend.handle} 20 for lunch” or paste an address or link.</>}</div></>);
     }
   })();
 
@@ -167,6 +208,15 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
         </form>
         <div className="kb">
           <div className="smart glow" key={intent.kind + (result?.kind ?? "")} data-testid="smart-card">{card}</div>
+          {aiModel && (
+            <div className="toolbar" role="group" aria-label="Rewrite with Claude">
+              {(["tidy", "warm", "brief"] as const).map((t) => (
+                <button type="button" key={t} className="tool" disabled={!text.trim() || !!rewriting} onClick={() => tone(t)}>
+                  {rewriting === t ? "Rewriting…" : t === "tidy" ? "Tidy" : t === "warm" ? "Warmer" : "Shorter"}
+                </button>
+              ))}
+            </div>
+          )}
           {ROWS.map((r, ri) => (
             <div className="row" key={r}>
               {ri === 2 && <div className="k fn">⇧</div>}
@@ -200,8 +250,13 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
             ))}
           </div>
           <p className="sub" style={{ marginTop: 14 }}>Signed in as @{me}. Payments use demo USDC.</p>
+          <p className="sub model-line">{aiModel ? <>Messages the patterns can’t read go to <b>{aiModel}</b>. Its answer is only a suggestion: Shield and your limits still check every payment.</> : <>The AI model is off on this server, so only the built-in patterns read messages.</>}</p>
         </div>
       </div>
     </div>
   );
+}
+
+function ModelTag() {
+  return <span className="model-tag" title="Suggested by Claude">Read by Claude</span>;
 }

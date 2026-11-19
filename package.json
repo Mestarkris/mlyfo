@@ -13,10 +13,12 @@
     "ship": "node scripts/loop.mjs && next build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.10.0",
     "@libsql/client": "^0.15.15",
     "next": "^15.5.29",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
