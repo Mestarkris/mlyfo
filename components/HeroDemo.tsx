@@ -73,10 +73,10 @@ const SCENARIOS: Scenario[] = [
   {
     em: "🔗", who: "Unknown", tag: "Link scan", tool: "ai", thread: ["claim your free SOL airdrop 🎁", "https://phantorn-airdrop.app/claim"], type: "",
     card: (<>
-      <div className="smart-top"><span className="chip warn">Shield</span>Scanned with Kane</div>
-      <div className="smart-title">This page asks for your seed phrase</div>
-      <div className="smart-sub">Kane opened it in a real browser. The domain imitates phantom.app.</div>
-      <div className="smart-actions"><span className="btn btn-ink">Block link</span><span className="btn btn-ghost">See evidence</span></div>
+      <div className="smart-top"><span className="chip warn">Shield</span>Opened in a safe test browser</div>
+      <div className="smart-title">Don’t open this link</div>
+      <div className="smart-sub">It asks for your seed phrase, and the address imitates phantom.app.</div>
+      <div className="smart-actions"><span className="btn btn-ink">Don’t open</span><span className="btn btn-ghost">See what it asks for</span></div>
     </>),
   },
 ];
@@ -150,7 +150,7 @@ export default function HeroDemo() {
               {shown.map((m, k) => <div key={i + "-" + k} className="b in">{m}</div>)}
               {typing && <div className="b in typing" aria-label="typing"><i /><i /><i /></div>}
             </div>
-            <div className="input-row"><div className="field"><span>{typed}</span><i className="caret" /></div></div>
+            <div className="input-row"><div className="field">{typed ? <span>{typed}</span> : <span className="ph">{s.who === "Unknown" ? "Message" : `Message ${s.who}`}</span>}<i className="caret" /></div></div>
             <div className="kb">
               <div key={cardKey} className={`smart ${showCard ? "glow" : "swap"}`}>{showCard ? s.card : null}</div>
               <div className="toolbar">

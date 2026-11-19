@@ -472,3 +472,4 @@ footer{border-top:1px solid var(--line);padding-top:28px}
   .demo-grid .hero-grid-demo{grid-template-columns:1fr;gap:32px}
   section{padding:72px 0}
 }
+.field .ph{color:var(--mute);order:2;margin-left:2px}.field{gap:0}
