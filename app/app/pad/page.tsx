@@ -20,7 +20,6 @@ export default async function PadPage() {
   return (
     <>
       <div className="main-top"><h1>Mlyfo Pad</h1></div>
-      <p className="sub pad-lede">The Mlyfo keyboard, running in your browser. Every action is real: it moves demo USDC, creates links and runs Shield.</p>
       <Pad friends={friends} me={u.handle} aiModel={aiEnabled() ? MODEL : null} />
     </>
   );

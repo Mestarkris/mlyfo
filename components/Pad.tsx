@@ -265,6 +265,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
         </div>
       </div>
       <aside className="pad-notes">
+        <p className="pad-notes-lead">The Mlyfo keyboard, running in your browser. Every action is real: it moves demo USDC, creates links and runs Shield.</p>
         <p>Tap <b>‹</b> to see all chats. Each friend has sent you something the keyboard can act on.</p>
         <p>Signed in as @{me}. Payments use demo USDC.</p>
         <p className="model-line">{aiModel ? <>Messages the patterns can’t read go to <b>{aiModel}</b>. Its answer is only a suggestion: Shield and your limits still check every payment.</> : <>The AI model is off on this server, so only the built-in patterns read messages.</>}</p>
