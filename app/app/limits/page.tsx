@@ -4,7 +4,7 @@ import { LimitsForm, ShieldToggles } from "@/components/LimitsForm";
 
 export default async function Limits() {
   const u = (await currentUser())!;
-  const today = spentToday(u.id);
+  const today = await spentToday(u.id);
   return (
     <>
       <div className="main-top"><h1>Limits</h1></div>

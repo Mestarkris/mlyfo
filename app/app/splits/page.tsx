@@ -5,7 +5,7 @@ import { NewSplit, CopyLink } from "@/components/SplitTools";
 
 export default async function Splits() {
   const u = (await currentUser())!;
-  const splits = splitsFor(u.id);
+  const splits = await splitsFor(u.id);
   return (
     <>
       <div className="main-top"><h1>Splits</h1></div>

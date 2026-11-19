@@ -8,6 +8,10 @@ Built for the KaneCLI Online Hackathon (Web + Mobile category).
 
 ## Try it (judges)
 
+**Live:** https://mlyfo.vercel.app (click **Try the demo account**). Kane's live-site run is under **Verified by Kane** once you sign in.
+
+Or run it locally:
+
 ```bash
 git clone <this repo> && cd mlyfo
 npm install
@@ -17,7 +21,8 @@ npm run dev            # http://localhost:3100
 | | |
 |---|---|
 | Demo login | `demo@mlyfo.app` / `mlyfo-demo-2026` (or click **Try the demo account** on the home page) |
-| Node | 22.13 or newer. The app uses the built-in `node:sqlite`, so no database setup is needed |
+| Node | 22.13 or newer. Locally the app keeps its data in a SQLite file in `data/`, so no database setup is needed |
+| Deploy | Vercel + Turso. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`; the schema and demo data are created on first start |
 | Money | Demo USDC only. New accounts start with $500. Nothing touches mainnet |
 | Reset data | `npm run reset`, then restart `npm run dev` |
 
@@ -65,7 +70,7 @@ When someone pastes a link, **Deep scan with Kane** runs `kane-cli run … --age
 ## Stack
 
 - Next.js 15 (app router) with React 19 and TypeScript.
-- `node:sqlite` for storage.
+- libSQL for storage: a local SQLite file in development, Turso in production (`lib/db.ts`).
 - Passwords hashed with scrypt, and httpOnly session cookies.
 
 ## Map

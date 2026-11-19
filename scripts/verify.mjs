@@ -27,9 +27,12 @@ function parseTest(file) {
 function runKane(objective, logFile) {
   return new Promise((resolve) => {
     const args = ["run", objective, "--agent", "--headless", "--max-steps", "25", "--timeout", "240"];
-    const child = spawn(BIN, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(BIN, args, { stdio: ["ignore", "pipe", "pipe"], detached: true });
     const log = fs.createWriteStream(logFile);
     let out = "";
+    // Kane's own --timeout doesn't always fire if the browser hangs, so enforce a hard limit.
+    const killer = setTimeout(() => { try { process.kill(-child.pid, "SIGKILL"); } catch {} }, 300_000);
+    child.on("close", () => clearTimeout(killer));
     child.stdout.on("data", (d) => { out += d; log.write(d); });
     child.stderr.on("data", (d) => process.stderr.write(d));
     child.on("error", (e) => resolve({ code: 2, error: e.code === "ENOENT" ? `${BIN} not found. Install it with: npm install -g @testmuai/kane-cli` : e.message }));
@@ -38,7 +41,7 @@ function runKane(objective, logFile) {
       const events = out.split("\n").map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
       const end = [...events].reverse().find((e) => e.type === "run_end" || e.event === "run_end" || ("status" in e && "summary" in e && !("step" in e)));
       const failedStep = events.filter((e) => e.status === "failed" && e.step).pop();
-      resolve({ code: code ?? 1, end, failedStep });
+      resolve({ code: code ?? 3, end, failedStep });
     });
   });
 }

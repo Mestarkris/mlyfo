@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { db } from "./db";
+import { q, type Q } from "./db";
 import { token } from "./crypto";
 
 export const SESSION_COOKIE = "mlyfo_session";
@@ -13,9 +13,9 @@ export type User = {
 const USER_COLS =
   "u.id,u.name,u.email,u.handle,u.address,u.balance_cents,u.daily_limit_cents,u.per_payment_cents,u.new_recipient_cents,u.shield_lookalike,u.shield_scamlist,u.shield_links,u.created_at";
 
-export function createSession(userId: number): string {
+export async function createSession(userId: number): Promise<string> {
   const t = token();
-  db().prepare("INSERT INTO sessions (token,user_id,expires_at) VALUES (?,?,datetime('now','+30 days'))").run(t, userId);
+  await q.run("INSERT INTO sessions (token,user_id,expires_at) VALUES (?,?,datetime('now','+30 days'))", t, userId);
   return t;
 }
 
@@ -29,19 +29,16 @@ export async function setSessionCookie(t: string) {
 export async function currentUser(): Promise<User | null> {
   const t = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!t) return null;
-  const u = db()
-    .prepare(`SELECT ${USER_COLS} FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > datetime('now')`)
-    .get(t) as User | undefined;
-  return u ?? null;
+  return (await q.get<User>(`SELECT ${USER_COLS} FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > datetime('now')`, t)) ?? null;
 }
 
-export function userById(id: number): User | null {
-  return (db().prepare(`SELECT ${USER_COLS} FROM users u WHERE u.id = ?`).get(id) as User | undefined) ?? null;
+export async function userById(id: number, t: Q = q): Promise<User | null> {
+  return (await t.get<User>(`SELECT ${USER_COLS} FROM users u WHERE u.id = ?`, id)) ?? null;
 }
 
 export async function endSession() {
   const jar = await cookies();
   const t = jar.get(SESSION_COOKIE)?.value;
-  if (t) db().prepare("DELETE FROM sessions WHERE token = ?").run(t);
+  if (t) await q.run("DELETE FROM sessions WHERE token = ?", t);
   jar.delete(SESSION_COOKIE);
 }

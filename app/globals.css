@@ -59,7 +59,7 @@ h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;line-h
 
 /* phone */
 .stage{position:relative;display:grid;place-items:center}
-.stage::before{content:"";position:absolute;inset:6% 2% 2%;border-radius:48px;background:radial-gradient(60% 50% at 50% 40%,rgba(11,156,138,.18),transparent 70%);filter:blur(10px)}
+.stage::before{content:"";position:absolute;pointer-events:none;inset:6% 2% 2%;border-radius:48px;background:radial-gradient(60% 50% at 50% 40%,rgba(11,156,138,.18),transparent 70%);filter:blur(10px)}
 .phone{position:relative;width:min(390px,100%);aspect-ratio:390/800;border-radius:54px;background:#0d1118;padding:12px;box-shadow:0 50px 100px -40px rgba(16,21,31,.55),0 20px 40px -24px rgba(16,21,31,.35),inset 0 0 0 1.5px #2a3140}
 .screen{position:relative;height:100%;border-radius:43px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
 .status{display:flex;justify-content:space-between;padding:14px 28px 0;font-size:13px;font-weight:600}
@@ -164,7 +164,7 @@ footer .wrap span:first-child{margin-right:auto}
 .f input{width:100%;height:46px;border-radius:12px;border:1px solid var(--line-2);background:#fff;padding:0 14px}
 .f input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,156,138,.18)}
 .f .hint{font-size:13px;color:var(--mute);margin-top:6px}
-.handle{position:relative}.handle input{padding-left:30px}.handle::before{content:"@";position:absolute;left:14px;top:12px;color:var(--mute)}
+.handle{position:relative}.handle input{padding-left:30px}.handle::before{content:"@";position:absolute;pointer-events:none;left:14px;top:12px;color:var(--mute)}
 .ok-line{font-size:13px;color:var(--teal-ink);margin-top:6px;font-weight:600}
 .or{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px;margin:22px 0}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line-2)}
@@ -268,7 +268,7 @@ footer .wrap span:first-child{margin-right:auto}
 .b{animation:pop .28s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}}
 .smart{position:relative;overflow:hidden}
-.smart.glow::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang),transparent 0 70%,var(--teal) 85%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 2.4s linear 1}
+.smart.glow::before{content:"";position:absolute;pointer-events:none;inset:-1px;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang),transparent 0 70%,var(--teal) 85%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 2.4s linear 1}
 @property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
 @keyframes spin{to{--ang:360deg}}
 .person{transition:background .3s,color .3s}

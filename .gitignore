@@ -4,3 +4,5 @@ data/*.db*
 kane/results/*.ndjson
 .env*
 !.env.example
+.vercel
+*.tsbuildinfo

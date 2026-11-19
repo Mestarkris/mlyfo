@@ -38,7 +38,10 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
     return theirs.kind === "split" || theirs.kind === "request" || theirs.kind === "link" || theirs.kind === "address" ? theirs : { kind: "none" };
   }, [text, lastTheirs]);
 
-  useEffect(() => { setResult(null); }, [fi, intent.kind]);
+  // A new chat clears the card. A new suggestion clears it too, except a success message,
+  // which stays until the user starts typing again.
+  useEffect(() => { setResult(null); }, [fi]);
+  useEffect(() => { setResult((r) => (r?.kind === "sent" && text === "" ? r : null)); }, [intent.kind]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const push = (m: Msg) => setThreads((t) => ({ ...t, [friend.handle]: [...t[friend.handle], m] }));
   const press = (c: string) => { setDown(c); setTimeout(() => setDown(null), 110); };
@@ -58,10 +61,11 @@ export default function Pad({ friends, me }: { friends: Friend[]; me: string }) 
           setText("");
         }
       } else if (intent.kind === "pay" || intent.kind === "request") {
-        const to = intent.kind === "pay" ? intent.to : "@" + friend.handle;
+        let to = intent.kind === "pay" ? intent.to : "@" + friend.handle;
         const amount = intent.amountCents / 100;
         const r = await api("/api/pay", "POST", { to, amount, note: intent.kind === "pay" ? intent.note : `Requested in chat` });
         const d = r.data;
+        if (d.to) to = d.to;
         if (d.status === "sent") { setResult({ kind: "sent", text: `Sent ${money(intent.amountCents)} to ${to}.` }); push({ from: "me", text: `Sent you ${money(intent.amountCents)} ✓` }); setText(""); }
         else if (d.status === "needs_confirmation") setResult({ kind: "confirm", id: d.paymentId, amount: intent.amountCents, to, reason: d.reasons.join(" ") });
         else {

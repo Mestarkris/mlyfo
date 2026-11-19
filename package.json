@@ -13,6 +13,7 @@
     "ship": "node scripts/loop.mjs && next build"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.15",
     "next": "^15.5.29",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

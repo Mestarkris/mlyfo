@@ -8,11 +8,9 @@ import { readResults } from "@/lib/verify";
 export default async function Overview({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const u = (await currentUser())!;
   const { welcome } = await searchParams;
-  const today = spentToday(u.id);
+  const [today, allSplits, acts, pending, blocked] = await Promise.all([spentToday(u.id), splitsFor(u.id), activity(u.id, 6), pendingConfirmations(u.id), blockedCount(u.id)]);
   const pct = Math.min(100, Math.round((today / u.daily_limit_cents) * 100));
-  const splits = splitsFor(u.id).slice(0, 3);
-  const acts = activity(u.id, 6);
-  const pending = pendingConfirmations(u.id);
+  const splits = allSplits.slice(0, 3);
   const sentAny = acts.some((a) => a.kind === "out" && a.status === "sent");
   const steps = [
     ["Create account", true], [`Claim @${u.handle}`, true],
@@ -63,7 +61,7 @@ export default async function Overview({ searchParams }: { searchParams: Promise
         </div>
         <div className="c">
           <h3>Shield <Link href="/app/shield" style={{ color: "var(--teal-ink)", fontSize: 14 }}>Open</Link></h3>
-          <div className="big-num">{blockedCount(u.id)}</div>
+          <div className="big-num">{blocked}</div>
           <div className="sub">risky payments and links stopped</div>
         </div>
 

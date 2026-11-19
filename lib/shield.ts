@@ -1,4 +1,4 @@
-import { db } from "./db";
+import { q } from "./db";
 import { isSolanaAddress } from "./crypto";
 import { DEMO } from "./seed";
 import type { User } from "./auth";
@@ -8,7 +8,7 @@ export type Finding = { level: "ok" | "info" | "warn" | "block"; code: string; m
 /** Addresses reported as drainers or scams. Real deployments would sync a feed. */
 const SCAM_ADDRESSES = new Set([DEMO.scam]);
 
-export function checkAddress(user: User, address: string): { findings: Finding[]; known: boolean; contact?: string } {
+export async function checkAddress(user: User, address: string): Promise<{ findings: Finding[]; known: boolean; contact?: string }> {
   const findings: Finding[] = [];
   const a = address.trim();
   if (!isSolanaAddress(a)) {
@@ -20,7 +20,7 @@ export function checkAddress(user: User, address: string): { findings: Finding[]
   if (user.shield_scamlist && SCAM_ADDRESSES.has(a)) {
     findings.push({ level: "block", code: "scamlist", message: "This address is on Mlyfo’s scam list. Payments to it are blocked." });
   }
-  const contacts = db().prepare("SELECT label, address FROM contacts WHERE user_id = ?").all(user.id) as { label: string; address: string }[];
+  const contacts = await q.all<{ label: string; address: string }>("SELECT label, address FROM contacts WHERE user_id = ?", user.id);
   const exact = contacts.find((c) => c.address === a);
   if (!exact && user.shield_lookalike) {
     const twin = contacts.find((c) => c.address.slice(0, 4) === a.slice(0, 4) && c.address.slice(-4) === a.slice(-4));
@@ -31,7 +31,7 @@ export function checkAddress(user: User, address: string): { findings: Finding[]
       });
     }
   }
-  const paidBefore = (db().prepare("SELECT COUNT(*) AS n FROM payments WHERE from_user = ? AND to_address = ? AND status = 'sent'").get(user.id, a) as { n: number }).n > 0;
+  const paidBefore = Number((await q.get<{ n: number }>("SELECT COUNT(*) AS n FROM payments WHERE from_user = ? AND to_address = ? AND status = 'sent'", user.id, a))?.n ?? 0) > 0;
   if (!exact && !paidBefore && !findings.some((f) => f.level === "block")) {
     findings.push({ level: "warn", code: "new", message: "You’ve never paid this address before." });
   }

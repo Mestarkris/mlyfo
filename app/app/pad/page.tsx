@@ -1,5 +1,5 @@
 import { currentUser } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { q } from "@/lib/db";
 import { DEMO } from "@/lib/seed";
 import Pad from "@/components/Pad";
 
@@ -13,7 +13,7 @@ const SCRIPT: Record<string, { emoji: string; opener: string }> = {
 
 export default async function PadPage() {
   const u = (await currentUser())!;
-  const users = db().prepare("SELECT handle, name FROM users WHERE handle IN ('zoya','semi','kabir','sofia','ada') AND id != ?").all(u.id) as { handle: string; name: string }[];
+  const users = await q.all<{ handle: string; name: string }>("SELECT handle, name FROM users WHERE handle IN ('zoya','semi','kabir','sofia','ada') AND id != ?", u.id);
   const order = ["zoya", "semi", "ada", "kabir", "sofia"];
   const friends = users.sort((a, b) => order.indexOf(a.handle) - order.indexOf(b.handle)).map((x) => ({ ...x, ...SCRIPT[x.handle] }));
   return (

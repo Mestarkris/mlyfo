@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-11-19T08:08:35.426Z",
+  "finishedAt": "2026-11-19T08:29:48.670Z",
+  "baseUrl": "http://localhost:3100",
+  "total": 5,
+  "passed": 5,
+  "tests": [
+    {
+      "name": "New user can sign up and lands on a funded dashboard",
+      "file": "01_signup_test.md",
+      "status": "passed",
+      "summary": "Completed the requested registration using the name Kane Tester, email kanen9qef5@mlyfo.app, and username kanen9qef5.\nConfirmed that @kanen9qef5 was available before creating the account.\nEntered the requested password and created the account.\nThe account opened to a page headed “Welcome, Kane” with a wallet balance of $500.00.",
+      "duration": 157.2,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SDKJ3F5V938ESTQVFC813F/dashboard/share/US_KXOBIPL8L7XDUQQ1DZKPNW3TWLL6PQZU9371S1DWZ81AW2F3AH49OV9DP2LRDFE0?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Split a $236 bill four ways and get a link per person",
+      "file": "02_split_test.md",
+      "status": "passed",
+      "summary": "Signed in and opened the splits page.\nCreated a split named “Kane dinner n9qef5” for a total of $236 with zoya, kabir, and sofia included.\nConfirmed the split was divided among 4 people at $59.00 each.\nConfirmed the new split is listed as “1 of 4 paid,” with zoya, kabir, and sofia each shown at $59.00 and each having a Copy link button.",
+      "duration": 226.9,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SDT1R618QXFC5PFMNRQK6N/dashboard/share/US_DGS2SUQ3OFBST22HANISPO6CL1PMIEOZS02BIMB46FSSOK1UWNF07C5OYANPQO7S?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Shield blocks a look-alike of a saved contact's address",
+      "file": "03_shield_lookalike_test.md",
+      "status": "passed",
+      "summary": "You asked to sign in and check the Solana address AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx on the Shield page.\nThe Sign in button was selected, then the Shield page was opened and the address was submitted for checking.\nThe check completed with a “Blocked” result and indicated that the address looks like Ada’s saved address but is not the saved address itself.",
+      "duration": 236.7,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SE2MK9P8VZ10NQR9NT3GR3/dashboard/share/US_PC73EO45R9PTFTDLJN525CCRZXSIF4SDQV9M96NEAVJYTPQVGC5N0QQT0N2S976Q?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "A payment over the spend limit waits for password confirmation",
+      "file": "04_spend_limit_test.md",
+      "status": "passed",
+      "summary": "Requested a $150 rent payment to @ada.\nEntered “pay @ada 150 for rent” in the message field and selected the $150 payment option.\nReviewed the confirmation showing “Confirm $150.00 to @ada” and the per-payment limit notice.\nEntered the provided password and confirmed the payment.\nThe payment was completed, with the page showing “Sent $150.00 to @ada.”",
+      "duration": 233.8,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SEBGPYT8SGC1282R2EPJYA/dashboard/share/US_DV6QKM17S4RUQODIB2SPO4D9XHOHQ2C9B01KRA615RF2RQDGF3ZY2GPDAPZ3M00L?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Shield flags a fake Phantom airdrop link as dangerous",
+      "file": "05_scam_link_test.md",
+      "status": "passed",
+      "summary": "You asked to sign in, open the Shield page, and check the link https://phantorn-airdrop.app/claim.\nThe link was entered and checked on the Shield page.\nThe result marked the link as Dangerous and explained that the address imitates Phantom but is not the real site.",
+      "duration": 143.4,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SEMFM41VRBWQV690C64KEZ/dashboard/share/US_3HLHTQURTTD5K5O9BCL89SD4ZGKVWJSDU6W5EC51TYEFW5QCZ00IGZ6GWLCR5HG4?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    }
+  ],
+  "loop": [
+    {
+      "attempt": 1,
+      "failed": []
+    }
+  ]
+}

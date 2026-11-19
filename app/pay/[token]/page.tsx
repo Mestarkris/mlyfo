@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
+import { q } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { fmt } from "@/lib/money";
 import Logo from "@/components/Logo";
@@ -9,10 +9,9 @@ import { PayShare } from "@/components/SplitTools";
 export const dynamic = "force-dynamic";
 export default async function PayPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const sh = db().prepare(`SELECT sh.label, sh.amount_cents, sh.paid_at, sh.is_owner, s.title, s.total_cents, o.handle, o.name,
+  const sh = await q.get<{ label: string; amount_cents: number; paid_at: string | null; is_owner: number; title: string; total_cents: number; handle: string; name: string; n: number }>(`SELECT sh.label, sh.amount_cents, sh.paid_at, sh.is_owner, s.title, s.total_cents, o.handle, o.name,
       (SELECT COUNT(*) FROM split_shares x WHERE x.split_id = s.id) AS n
-    FROM split_shares sh JOIN splits s ON s.id = sh.split_id JOIN users o ON o.id = s.owner_id WHERE sh.token = ?`).get(token) as
-    { label: string; amount_cents: number; paid_at: string | null; is_owner: number; title: string; total_cents: number; handle: string; name: string; n: number } | undefined;
+    FROM split_shares sh JOIN splits s ON s.id = sh.split_id JOIN users o ON o.id = s.owner_id WHERE sh.token = ?`, token);
   if (!sh || sh.is_owner) notFound();
   const me = await currentUser();
   return (

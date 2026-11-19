@@ -4,8 +4,7 @@ import { AddressCheck, LinkScan, AddContact, RemoveContact } from "@/components/
 
 export default async function Shield() {
   const u = (await currentUser())!;
-  const cs = contacts(u.id);
-  const scans = linkScans(u.id);
+  const [cs, scans] = await Promise.all([contacts(u.id), linkScans(u.id)]);
   return (
     <>
       <div className="main-top"><h1>Shield</h1></div>

@@ -1,9 +1,14 @@
-import { DatabaseSync } from "node:sqlite";
+import { createClient, type Client, type InArgs, type Transaction } from "@libsql/client";
 import fs from "node:fs";
 import path from "node:path";
 import { seed } from "./seed";
 
-const DB_PATH = process.env.MLYFO_DB ?? path.join(process.cwd(), "data", "mlyfo.db");
+/**
+ * Storage. Locally this is a SQLite file in data/ (no setup needed).
+ * On Vercel set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN and the same SQL runs on Turso.
+ */
+const REMOTE = process.env.TURSO_DATABASE_URL;
+const LOCAL = process.env.MLYFO_DB ?? path.join(process.cwd(), "data", "mlyfo.db");
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users (
@@ -76,30 +81,63 @@ CREATE TABLE IF NOT EXISTS link_scans (
 );
 `;
 
-type G = typeof globalThis & { __mlyfoDb?: DatabaseSync };
+type Row = Record<string, unknown>;
+export type Q = {
+  get<T = Row>(sql: string, ...args: unknown[]): Promise<T | undefined>;
+  all<T = Row>(sql: string, ...args: unknown[]): Promise<T[]>;
+  run(sql: string, ...args: unknown[]): Promise<{ lastInsertRowid: number; changes: number }>;
+};
+
+type G = typeof globalThis & { __mlyfo?: Promise<Client> };
 const g = globalThis as G;
 
-export function db(): DatabaseSync {
-  if (g.__mlyfoDb) return g.__mlyfoDb;
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  const d = new DatabaseSync(DB_PATH);
-  d.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
-  d.exec(SCHEMA);
-  const { n } = d.prepare("SELECT COUNT(*) AS n FROM users").get() as { n: number };
-  if (n === 0) seed(d);
-  g.__mlyfoDb = d;
-  return d;
+async function open(): Promise<Client> {
+  let c: Client;
+  if (REMOTE) {
+    c = createClient({ url: REMOTE, authToken: process.env.TURSO_AUTH_TOKEN });
+  } else {
+    fs.mkdirSync(path.dirname(LOCAL), { recursive: true });
+    c = createClient({ url: "file:" + LOCAL });
+    await c.execute("PRAGMA journal_mode = WAL");
+    await c.execute("PRAGMA busy_timeout = 5000");
+  }
+  await c.execute("PRAGMA foreign_keys = ON");
+  await c.executeMultiple(SCHEMA);
+  const n = Number((await c.execute("SELECT COUNT(*) AS n FROM users")).rows[0].n);
+  if (n === 0) {
+    try { await c.batch(seed(), "write"); }
+    catch (e) { if (!String(e).includes("UNIQUE")) throw e; } // another instance seeded first
+  }
+  return c;
 }
 
-export function tx<T>(fn: () => T): T {
-  const d = db();
-  d.exec("BEGIN IMMEDIATE");
+export function client(): Promise<Client> {
+  if (!g.__mlyfo) g.__mlyfo = open().catch((e) => { g.__mlyfo = undefined; throw e; });
+  return g.__mlyfo;
+}
+
+const plain = (cols: string[], r: Row): Row => Object.fromEntries(cols.map((c) => [c, r[c]]));
+const norm = (args: unknown[]) => args.map((a) => (a === undefined ? null : typeof a === "boolean" ? Number(a) : a)) as InArgs;
+
+function wrap(exec: (sql: string, args: InArgs) => Promise<{ rows: Row[]; columns: string[]; lastInsertRowid?: bigint; rowsAffected: number }>): Q {
+  return {
+    async get(sql, ...args) { const r = await exec(sql, norm(args)); return r.rows[0] ? (plain(r.columns, r.rows[0]) as never) : undefined; },
+    async all(sql, ...args) { const r = await exec(sql, norm(args)); return r.rows.map((x) => plain(r.columns, x)) as never; },
+    async run(sql, ...args) { const r = await exec(sql, norm(args)); return { lastInsertRowid: Number(r.lastInsertRowid ?? 0), changes: r.rowsAffected }; },
+  };
+}
+
+/** Run one query outside a transaction. */
+export const q: Q = wrap(async (sql, args) => (await client()).execute({ sql, args }) as never);
+
+/** Run several queries atomically. Everything inside must use the given `t`. */
+export async function tx<T>(fn: (t: Q) => Promise<T>): Promise<T> {
+  const t: Transaction = await (await client()).transaction("write");
   try {
-    const r = fn();
-    d.exec("COMMIT");
+    const r = await fn(wrap((sql, args) => t.execute({ sql, args }) as never));
+    await t.commit();
     return r;
-  } catch (e) {
-    d.exec("ROLLBACK");
-    throw e;
+  } finally {
+    t.close();
   }
 }

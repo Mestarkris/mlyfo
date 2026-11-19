@@ -1,4 +1,4 @@
-import type { DatabaseSync } from "node:sqlite";
+import type { InStatement } from "@libsql/client";
 import { hashPassword } from "./crypto";
 
 /** Fixed demo addresses so Kane tests and the README can reference them. */
@@ -20,25 +20,16 @@ const people: [string, string, string][] = [
   ["Semi Adeyemi", "semi", "SemJ5tQ2vRm9xLwT4nBc8ZsY3hJfUe6GdN1oPq5Md5K"],
 ];
 
-export function seed(d: DatabaseSync) {
-  const insUser = d.prepare(
-    "INSERT INTO users (name,email,handle,password_hash,address,balance_cents) VALUES (?,?,?,?,?,?)",
-  );
+/** Demo data as one batch. The demo user is id 1, the people are 2–6 in order. */
+export function seed(): InStatement[] {
   const pw = hashPassword(DEMO.password);
-  const r = insUser.run("Demo Judge", DEMO.email, "demo", pw, "DemoJ7pQ2vRm9xLwT4nBc8ZsY3hJfUe6GdN1oPq5Mz9W", 100000);
-  const demoId = Number(r.lastInsertRowid);
-  for (const [name, handle, addr] of people) {
-    insUser.run(name, `${handle}@mlyfo.app`, handle, pw, addr, 50000);
-  }
-  const insC = d.prepare("INSERT INTO contacts (user_id,label,address,emoji) VALUES (?,?,?,?)");
-  insC.run(demoId, "Ada", DEMO.ada, "🎁");
-  insC.run(demoId, "Kabir", people[1][2], "🚗");
-  insC.run(demoId, "Zoya", people[2][2], "🍝");
-  insC.run(demoId, "Semi", people[4][2], "🏆");
+  const U = "INSERT INTO users (id,name,email,handle,password_hash,address,balance_cents) VALUES (?,?,?,?,?,?,?)";
+  const s: InStatement[] = [{ sql: U, args: [1, "Demo Judge", DEMO.email, "demo", pw, "DemoJ7pQ2vRm9xLwT4nBc8ZsY3hJfUe6GdN1oPq5Mz9W", 100000] }];
+  people.forEach(([name, handle, addr], i) => s.push({ sql: U, args: [i + 2, name, `${handle}@mlyfo.app`, handle, pw, addr, 50000] }));
+  const C = "INSERT INTO contacts (user_id,label,address,emoji) VALUES (1,?,?,?)";
+  s.push({ sql: C, args: ["Ada", DEMO.ada, "🎁"] }, { sql: C, args: ["Kabir", people[1][2], "🚗"] }, { sql: C, args: ["Zoya", people[2][2], "🍝"] }, { sql: C, args: ["Semi", people[4][2], "🏆"] });
   // A prior payment so Ada and Kabir count as known recipients.
-  const insP = d.prepare(
-    "INSERT INTO payments (from_user,to_address,to_user,amount_cents,note,status,created_at) VALUES (?,?,?,?,?, 'sent', datetime('now','-2 days'))",
-  );
-  insP.run(demoId, DEMO.ada, 2, 4000, "Birthday gift");
-  insP.run(demoId, people[1][2], 3, 1500, "Fuel");
+  const P = "INSERT INTO payments (from_user,to_address,to_user,amount_cents,note,status,created_at) VALUES (1,?,?,?,?, 'sent', datetime('now','-2 days'))";
+  s.push({ sql: P, args: [DEMO.ada, 2, 4000, "Birthday gift"] }, { sql: P, args: [people[1][2], 3, 1500, "Fuel"] });
+  return s;
 }
