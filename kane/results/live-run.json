@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-11-19T08:33:46.379Z",
+  "finishedAt": "2026-11-19T08:47:01.809Z",
+  "baseUrl": "https://mlyfo.vercel.app",
+  "total": 5,
+  "passed": 5,
+  "tests": [
+    {
+      "name": "New user can sign up and lands on a funded dashboard",
+      "file": "01_signup_test.md",
+      "status": "passed",
+      "summary": "The requested registration details were entered for Kane Tester, including the email address and username kanenams8l.\nThe username was confirmed as available: “@kanenams8l is free.”\nThe password was entered and the Create account button was selected.\nThe account was created successfully, opening a page headed “Welcome, Kane” with a wallet balance of $500.00.",
+      "duration": 173.3,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SF1Q15MXNRV90N1K7R7RS8/dashboard/share/US_CO1MFM5Q1GB5G97YX0HX9MBSWYERUL8SAOKUZNTLNZKQADUQQJKCR8KA5KL317E4?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Split a $236 bill four ways and get a link per person",
+      "file": "02_split_test.md",
+      "status": "passed",
+      "summary": "Signed in and opened the splits page.\nCreated a split named “Kane dinner nams8l” for a total of $236 with zoya, kabir, and sofia included.\nThe split was calculated for 4 people at $59.00 each.\nThe new split is listed as “1 of 4 paid,” with $59.00 entries and a Copy link button for zoya, kabir, and sofia.",
+      "duration": 137.3,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SF8VXBK52WSXXS57W47ZSY/dashboard/share/US_3RCO8C00BYQUB0XWEPA5A4Y2EIAIEIB5YDGL1SKBM2VII9SUAIRE75HXC0HC48WH?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Shield blocks a look-alike of a saved contact's address",
+      "file": "03_shield_lookalike_test.md",
+      "status": "passed",
+      "summary": "You asked to check a Solana address using the Shield page.\nThe sign-in button was selected, the Shield page was opened, and the provided address was entered and checked.\nThe result marked the address as “Blocked” and indicated that it looks like Ada’s saved address but is not the same address.",
+      "duration": 71.7,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SFEPAYPXS1DK9EKPZFJMK1/dashboard/share/US_7LD65GOM4BCYFBLAHE2V1FU8JEL8O1C25HNPJYAI3795DNO8587ZYHEPRDHGY7ZE?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "A payment over the spend limit waits for password confirmation",
+      "file": "04_spend_limit_test.md",
+      "status": "passed",
+      "summary": "Requested a $150 rent payment to @ada.\nEntered “pay @ada 150 for rent” and selected the $150 payment option.\nEntered the password and confirmed the payment.\nThe payment was completed successfully: $150.00 was sent to @ada.",
+      "duration": 124,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SFJ6VFK0GEKJBDAE1X58B1/dashboard/share/US_FINRQ8Z1SO0ZQOH4X9W2LGX2QS9091VSINU3JPAJ0S5O9C2CJBBMEF19B88YHT33?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "Shield flags a fake Phantom airdrop link as dangerous",
+      "file": "05_scam_link_test.md",
+      "status": "passed",
+      "summary": "Signed in and opened the Shield page.\nEntered https://phantorn-airdrop.app/claim in the link field and ran a quick check.\nThe check labeled the link as Dangerous and explained that the address imitates Phantom rather than being the real site.",
+      "duration": 54.7,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7SFQ32EJFTRZHPTWYP5DJPA/dashboard/share/US_SE22TATDV8HADTY2340C91IYL4Y9R3BSK0PEVSK7Y7TLV35BMXDX61HVE9TFZOXO?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    }
+  ],
+  "loop": [
+    {
+      "attempt": 1,
+      "failed": []
+    }
+  ]
+}
