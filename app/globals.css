@@ -1063,3 +1063,5 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em}
 .heal-more::after{content:"Show details";color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 .heal-box[open] .heal-more::after{content:"Hide details"}
 .heal-box>summary:focus-visible{outline:2px solid var(--teal-ink, currentColor);outline-offset:4px;border-radius:6px}
+.linkish{background:none;border:0;padding:0;font:inherit;color:var(--teal-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkish:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:4px}

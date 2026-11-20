@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export type Device = "web" | "phone";
-export type KaneTest = { name: string; file: string; device?: Device; deviceName?: string; status: "passed" | "failed" | "error"; summary: string; duration?: number; testUrl?: string | null; attempt: number };
+export type KaneTest = { name: string; file: string; device?: Device; deviceName?: string; status: "passed" | "failed" | "error"; summary: string; duration?: number; testUrl?: string | null; log?: string; attempt: number };
 export type KaneReport = { startedAt: string; finishedAt: string; baseUrl: string; total: number; passed: number; phone?: { name: string; width: number; height: number }; tests: KaneTest[]; loop: { attempt: number; failed: string[]; fixedBy?: string }[] };
 
 /** One row per test file, with its desktop and phone results side by side. */

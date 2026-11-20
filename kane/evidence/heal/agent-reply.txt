@@ -1,0 +1,1 @@
+The look-alike check in `lib/shield.ts:26` now compares the last 4 characters (`a.slice(-4)`) instead of the shifted `a.slice(-5, -1)`. The shifted version meant Ada's look-alike never matched, so Shield never showed "Blocked" or the look-alike message. I haven't re-run the Kane test.

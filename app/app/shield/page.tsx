@@ -25,7 +25,7 @@ export default async function Shield() {
           {scans.length > 0 && <div className="list" style={{ marginTop: 16 }}>
             {scans.map((s) => (
               <div className="li" key={s.id}><span className="ava"><Icon name="link" /></span>
-                <div className="addr" style={{ fontFamily: "inherit" }}>{s.url}<small>{s.source === "kane" ? "Deep scan by Kane" : "Quick check"}</small></div>
+                <div className="addr" style={{ fontFamily: "inherit" }}>{s.url}<small>{s.source === "kane" ? "Deep scan by Kane" : s.source === "kane-recorded" ? "Deep scan recorded by Kane" : "Quick check"}</small></div>
                 <span className={`verdict ${s.verdict}`}>{s.verdict}</span></div>
             ))}
           </div>}

@@ -208,7 +208,7 @@ export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: s
             {result.twin && <div className="addr" style={{ marginTop: 6 }}>{[...result.typed].map((c, i) => <span key={i} className={c !== result.twin![i] ? "x" : ""}>{c}</span>)}</div>}
             {!block && warn && <SaveContact address={result.typed} onSaved={(n) => { push({ from: "me", text: `Saved ${n} to my people ✓` }); router.refresh(); }} />}</>);
         }
-        case "link": return (<><div className="smart-top"><span className={`chip ${result.verdict === "safe" ? "" : "warn"}`}>Shield</span>{result.source === "kane" ? "Opened by Kane in a real browser" : "Quick check"}</div>
+        case "link": return (<><div className="smart-top"><span className={`chip ${result.verdict === "safe" ? "" : "warn"}`}>Shield</span>{result.source === "kane" ? "Opened by Kane in a real browser" : result.source === "kane-recorded" ? "Recorded by Kane in a real browser" : "Quick check"}</div>
           <div className="smart-title" data-testid="pad-link">{result.verdict === "safe" ? "Link looks safe" : result.verdict === "risky" ? "Be careful with this link" : "Don’t open this link"}</div>
           <div className="smart-sub">{result.reasons.join(" ")}{result.kaneError ? ` Deep scan unavailable: ${result.kaneError}` : ""}</div>
           {result.source !== "kane" && intent.kind === "link" && <div className="smart-actions"><button className="btn btn-teal" disabled={busy} onClick={() => deepScan(intent.url)}>{busy ? "Kane is opening it…" : "Deep scan with Kane"}</button></div>}

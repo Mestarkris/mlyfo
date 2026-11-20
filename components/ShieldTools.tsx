@@ -34,6 +34,9 @@ export function AddressCheck() {
   );
 }
 
+/** A fake airdrop page on this site that exists only so Shield and Kane have a scam to catch. */
+const SAMPLE = "https://mlyfo.vercel.app/test-pages/fake-airdrop.html";
+
 export function LinkScan({ enabled }: { enabled: boolean }) {
   const router = useRouter();
   const [url, setUrl] = useState("");
@@ -52,12 +55,15 @@ export function LinkScan({ enabled }: { enabled: boolean }) {
         <button className="btn btn-ink btn-sm" disabled={!!busy}>{busy === "fast" ? "Checking…" : "Quick check"}</button>
         <button type="button" className="btn btn-teal btn-sm" disabled={!!busy || !url} onClick={() => run(true)}>{busy === "deep" ? "Kane is opening the page…" : "Deep scan with Kane"}</button>
       </form>
+      <div className="sub" style={{ marginTop: 8 }}>No link handy? <button type="button" className="linkish" onClick={() => setUrl(SAMPLE)}>Use our test scam page</button></div>
       {res && (
         <div style={{ marginTop: 14 }} data-testid="link-result">
           <span className={`verdict ${res.verdict}`}>{res.verdict === "safe" ? "Safe" : res.verdict === "risky" ? "Risky" : "Dangerous"}</span>
           {res.source === "kane" && <span className="kane-badge" style={{ marginLeft: 10 }}>Opened by Kane in a real browser</span>}
+          {res.source === "kane-recorded" && <span className="kane-badge" style={{ marginLeft: 10 }}>Recorded by Kane in a real browser, {new Date(res.recordedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>}
           <ul className="reasons">{res.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
-          {res.kaneError && <div className="sub" style={{ marginTop: 8 }}>Deep scan unavailable: {res.kaneError} Showing the quick check.</div>}
+          {res.source === "kane-recorded" && <div className="sub" style={{ marginTop: 8 }}>Kane can’t open pages on this server, so this is the scan Kane recorded of the same link.</div>}
+          {res.kaneError && <div className="sub" style={{ marginTop: 8 }}>Kane can’t open pages on this server, so this is the quick check. Try a deep scan on <button type="button" className="linkish" onClick={() => setUrl(SAMPLE)}>our test scam page</button> to see a scan Kane recorded.</div>}
           {res.testUrl && <a className="sub" href={res.testUrl} target="_blank" rel="noreferrer" style={{ color: "var(--teal-ink)" }}>See Kane’s evidence</a>}
         </div>
       )}

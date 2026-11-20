@@ -1,11 +1,15 @@
 import { byTest, readHeal, readResults, score, type KaneTest } from "@/lib/verify";
 
+/** Kane’s step-by-step logs are committed to the repo, so the evidence outlives the CI run. */
+const LOGS = "https://github.com/Mestarkris/mlyfo/blob/main/kane/evidence";
+
 function Result({ t }: { t?: KaneTest }) {
   if (!t) return <span className="vcell none">Desktop only</span>;
   return (
     <span className="vcell">
       <span className={`verdict ${t.status === "passed" ? "passed" : "failed"}`}>{t.status === "passed" ? "Passed" : "Failed"}</span>
       {t.testUrl && <a href={t.testUrl} target="_blank" rel="noreferrer">Evidence</a>}
+      {t.log && <a href={`${LOGS}/${t.log}`} target="_blank" rel="noreferrer">Log</a>}
     </span>
   );
 }
@@ -56,9 +60,9 @@ export default function Verified() {
               <p className="sub" style={{ marginTop: 14, maxWidth: "70ch" }}>We broke Mlyfo on purpose to prove the loop works. {heal.bug.effect}</p>
               <ol className="heal">
                 <li><b>Broken on purpose</b><span>{heal.bug.title}, in <code>{heal.bug.file}</code></span><pre className="diff">{heal.bug.plantedDiff}</pre></li>
-                <li><b>{heal.caught ? "Caught by Kane" : "Kane missed it"}</b><span>{heal.caught ? `“${heal.caughtBy}” failed in a real browser.` : "The test passed on the broken build."}</span></li>
+                <li><b>{heal.caught ? "Caught by Kane" : "Kane missed it"}</b><span>{heal.caught ? `“${heal.caughtBy}” failed in a real browser.` : "The test passed on the broken build."}{" "}<a href={`${LOGS}/heal/03_shield_lookalike.ndjson`} target="_blank" rel="noreferrer">Kane’s log</a></span></li>
                 {heal.attempts.filter((a) => a.fixedBy).map((a) => (
-                  <li key={a.attempt}><b>Fixed by {a.fixedBy === "claude" ? "Claude Code" : a.fixedBy}</b><span>The failure and Kane’s evidence went to the coding agent, which changed the code.</span>
+                  <li key={a.attempt}><b>Fixed by {a.fixedBy === "claude" ? "Claude Code" : a.fixedBy}</b><span>The failure and Kane’s evidence went to the coding agent, which changed the code.{" "}<a href={`${LOGS}/heal/fix-request.md`} target="_blank" rel="noreferrer">What Kane sent</a>{" · "}<a href={`${LOGS}/heal/agent-reply.txt`} target="_blank" rel="noreferrer">Agent’s reply</a></span>
                     {heal.fixDiff && <pre className="diff">{heal.fixDiff}</pre>}</li>
                 ))}
                 <li><b>{heal.healed ? "Healed" : "Not healed"}</b><span>{heal.healed ? `Kane ran the test again and it passed, ${heal.attempts.length} attempts in all.` : "Kane still finds the failure, so this build would not ship."}</span>
