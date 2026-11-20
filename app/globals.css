@@ -1053,3 +1053,13 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em}
 .heal li:not(:last-child)::after{content:"";position:absolute;left:10.5px;top:26px;bottom:4px;width:1px;background:var(--line)}
 .heal li span{color:var(--mute);font-size:14px}
 .diff{margin:6px 0 0;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.35);border:1px solid var(--line);font:12.5px/1.6 var(--mono, ui-monospace, monospace);white-space:pre-wrap;word-break:break-all;color:var(--ink)}
+/* Self-heal drill: one line, details on demand */
+.heal-box>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;flex-wrap:wrap}
+.heal-box>summary::-webkit-details-marker{display:none}
+.heal-box>summary .verdict{flex:none}
+.heal-line{flex:1 1 320px;min-width:0;color:var(--mute);font-size:14px}
+.heal-line b{color:var(--ink);font-weight:500}
+.heal-more{flex:none;color:var(--mute);font-size:13px;display:inline-flex;align-items:center;gap:8px}
+.heal-more::after{content:"Show details";color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.heal-box[open] .heal-more::after{content:"Hide details"}
+.heal-box>summary:focus-visible{outline:2px solid var(--teal-ink, currentColor);outline-offset:4px;border-radius:6px}

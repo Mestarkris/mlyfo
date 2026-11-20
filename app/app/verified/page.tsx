@@ -44,8 +44,16 @@ export default function Verified() {
           </div>
 
           {heal && (
-            <div className="c" style={{ gridColumn: "1 / -1" }} data-testid="heal-drill"><h3>Self-heal drill</h3>
-              <p className="sub" style={{ marginTop: 4, maxWidth: "70ch" }}>We broke Mlyfo on purpose to prove the loop works. {heal.bug.effect}</p>
+            <details className="c heal-box" style={{ gridColumn: "1 / -1" }} data-testid="heal-drill">
+              <summary>
+                <span className={`verdict ${heal.healed ? "passed" : "failed"}`}>{heal.healed ? "healed" : "not healed"}</span>
+                <span className="heal-line"><b>Self-heal drill</b>{" "}
+                  {heal.healed ? "Kane caught a bug we planted in Shield, Claude Code fixed it, and Kane passed the fix."
+                    : heal.caught ? "Kane caught a bug we planted in Shield, but the fix didn’t pass yet."
+                    : "Kane didn’t catch the bug we planted in Shield."}</span>
+                <span className="heal-more">{new Date(heal.finishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+              </summary>
+              <p className="sub" style={{ marginTop: 14, maxWidth: "70ch" }}>We broke Mlyfo on purpose to prove the loop works. {heal.bug.effect}</p>
               <ol className="heal">
                 <li><b>Broken on purpose</b><span>{heal.bug.title}, in <code>{heal.bug.file}</code></span><pre className="diff">{heal.bug.plantedDiff}</pre></li>
                 <li><b>{heal.caught ? "Caught by Kane" : "Kane missed it"}</b><span>{heal.caught ? `“${heal.caughtBy}” failed in a real browser.` : "The test passed on the broken build."}</span></li>
@@ -57,7 +65,7 @@ export default function Verified() {
                   <span className={`verdict ${heal.healed ? "passed" : "failed"}`} style={{ marginTop: 6, width: "fit-content" }}>{heal.healed ? "passed" : "failed"}</span></li>
               </ol>
               <div className="sub" style={{ marginTop: 10 }}>Run it yourself: <code>npm run heal</code>. {new Date(heal.finishedAt).toLocaleString()}</div>
-            </div>
+            </details>
           )}
 
           <div className="c" style={{ gridColumn: "1 / -1" }}><h3>Fix loop</h3>
