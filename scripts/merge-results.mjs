@@ -16,7 +16,13 @@ const reports = fs.readdirSync(src, { withFileTypes: true }).filter((d) => d.isD
     const r = JSON.parse(fs.readFileSync(path.join(dir, "latest.json"), "utf8"));
     for (const f of fs.readdirSync(dir).filter((f) => f.endsWith(".ndjson"))) fs.copyFileSync(path.join(dir, f), path.join(OUT, f));
     return [r];
-  } catch { console.error(`No report in ${d.name} (the job may have crashed).`); return []; }
+  } catch {
+    // The job crashed before writing a report: count it as a failed test, don't drop it.
+    console.error(`No report in ${d.name} (the job crashed).`);
+    const m = d.name.match(/^kane-(.+)-(web|phone)$/);
+    if (!m) return [];
+    return [{ tests: [{ name: m[1], file: `${m[1]}_test.md`, device: m[2], status: "failed", summary: "The Kane job crashed before reporting. See the Actions run." }] }];
+  }
 });
 if (!reports.length) { console.error("No Kane reports to merge."); process.exit(1); }
 
@@ -24,9 +30,9 @@ const tests = reports.flatMap((r) => r.tests)
   .sort((a, b) => a.file.localeCompare(b.file) || ((a.device ?? "web") === "web" ? -1 : 1));
 const failed = tests.filter((t) => t.status !== "passed");
 const report = {
-  startedAt: reports.map((r) => r.startedAt).sort()[0],
-  finishedAt: reports.map((r) => r.finishedAt).sort().at(-1),
-  baseUrl: reports[0].baseUrl,
+  startedAt: reports.map((r) => r.startedAt).filter(Boolean).sort()[0],
+  finishedAt: reports.map((r) => r.finishedAt).filter(Boolean).sort().at(-1),
+  baseUrl: reports.find((r) => r.baseUrl)?.baseUrl ?? process.env.MLYFO_URL,
   total: tests.length,
   passed: tests.length - failed.length,
   phone: reports.find((r) => r.phone)?.phone,

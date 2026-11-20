@@ -131,7 +131,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add kane/results/latest.json $(ls kane/results/*.ndjson 2>/dev/null)
+          git add kane/results/latest.json
           git diff --cached --quiet && exit 0
           git commit -m "Kane results: $(node -p 'const r=require("./kane/results/latest.json"); r.passed+"/"+r.total+" passed"')"
           git pull --rebase && git push

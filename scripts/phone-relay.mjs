@@ -109,8 +109,13 @@ export async function startPhone({ chrome = process.env.KANE_CLI_CHROME_PATH, lo
     endpoint: `http://127.0.0.1:${relayPort}`,
     async close() {
       wss.close(); server.close();
+      // Wait for Chrome to exit before removing its profile, or it may still be writing files there.
+      const exited = proc.exitCode !== null || proc.signalCode !== null
+        ? Promise.resolve()
+        : new Promise((r) => { proc.once("exit", r); setTimeout(r, 5000); });
       try { proc.kill("SIGKILL"); } catch {}
-      fs.rmSync(profile, { recursive: true, force: true });
+      await exited;
+      try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
     },
   };
 }
