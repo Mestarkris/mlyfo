@@ -82,7 +82,7 @@ jobs:
           node-version: 22
       - name: Install
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --ignore-scripts --no-audit --no-fund
           npm install -g @testmuai/kane-cli@${KANE_CLI_VERSION}
       - name: Sign in to Kane
         env:
@@ -131,7 +131,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add kane/results/latest.json kane/results/*.ndjson
+          git add kane/results/latest.json $(ls kane/results/*.ndjson 2>/dev/null)
           git diff --cached --quiet && exit 0
           git commit -m "Kane results: $(node -p 'const r=require("./kane/results/latest.json"); r.passed+"/"+r.total+" passed"')"
           git pull --rebase && git push
