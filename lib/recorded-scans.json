@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "url": "https://mlyfo.vercel.app/test-pages/fake-airdrop.html",
+    "verdict": "dangerous",
+    "reasons": [
+      "Kane saw the page ask for a seed phrase or private key.",
+      "Kane saw the page promise free tokens or an airdrop.",
+      "Kane saw the page ask to connect a wallet."
+    ],
+    "title": "Free SOL airdrop (Mlyfo test page)",
+    "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M7WN9EKKC9RBF441B5JVB2PF/dashboard/share/US_954A46N0HZ3GS3E406I5RPG7P5TFVNMX15SRDKZ6N8NE6R3CZ5PHOCW2IBM80156?type=summary&agentView=true&fqdn=summary-page",
+    "recordedAt": "2026-11-20T14:23:11.185Z"
+  }
+]
