@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-11-20T12:48:09.557Z",
+  "finishedAt": "2026-11-20T13:01:13.179Z",
+  "baseUrl": "http://localhost:3100",
+  "caught": true,
+  "healed": true,
+  "bug": {
+    "title": "Shield’s look-alike check compares the wrong last 4 characters",
+    "file": "lib/shield.ts",
+    "effect": "An address that copies the first and last 4 characters of a saved contact is no longer blocked.",
+    "plantedDiff": "-c.address.slice(-4) === a.slice(-4)\n+c.address.slice(-4) === a.slice(-5, -1)"
+  },
+  "caughtBy": "Shield blocks a look-alike of a saved contact's address",
+  "attempts": [
+    {
+      "attempt": 1,
+      "failed": [
+        "03_shield_lookalike_test.md"
+      ],
+      "fixedBy": "Claude Code"
+    },
+    {
+      "attempt": 2,
+      "failed": [],
+      "fixedBy": null
+    }
+  ],
+  "fixDiff": "-    const twin = contacts.find((c) => c.address.slice(0, 4) === a.slice(0, 4) && c.address.slice(-4) === a.slice(-5, -1));\n+    const twin = contacts.find((c) => c.address.slice(0, 4) === a.slice(0, 4) && c.address.slice(-4) === a.slice(-4));"
+}

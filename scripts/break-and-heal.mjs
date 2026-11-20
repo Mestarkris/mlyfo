@@ -62,7 +62,10 @@ const fixDiff = (() => {
 })();
 const report = (() => { try { return JSON.parse(fs.readFileSync(path.join(OUT, "latest.json"), "utf8")); } catch { return null; } })();
 // Healed means Kane failed the broken build first, then passed after the agent's fix.
-const caught = (report?.loop?.[0]?.failed ?? []).length > 0;
+// A timeout or a run with no result means Kane never reached the check, so it doesn't count as catching the bug.
+const first = report?.loop?.[0];
+const firstReasons = first?.reasons ?? report?.tests.filter((t) => t.status !== "passed").map((t) => t.summary) ?? [];
+const caught = (first?.failed ?? []).length > 0 && !firstReasons.some((s) => /timed out|returned no result|crashed/i.test(s ?? ""));
 const healed = loop.status === 0 && caught;
 
 const story = {

@@ -1,0 +1,82 @@
+# Self-heal drill on GitHub's machines (the laptop is too small to run the app, Chrome and Kane at once).
+# Breaks Shield on purpose in a throwaway copy of the code, lets Kane catch it in a real browser,
+# hands Kane's failure to Claude Code to fix, and has Kane check the fix. The story is committed to
+# kane/results/heal/story.json, which /app/verified shows. The broken or fixed code is never committed.
+#
+# Needs the Kane secrets (KANE_USERNAME, KANE_ACCESS_KEY) and CLAUDE_CODE_OAUTH_TOKEN
+# (make one with `claude setup-token`).
+name: Self-heal drill
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: heal
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          npm install -g @testmuai/kane-cli@0.10.6 @anthropic-ai/claude-code
+      - name: Sign in to Kane
+        env:
+          KANE_USERNAME: ${{ secrets.KANE_USERNAME }}
+          KANE_ACCESS_KEY: ${{ secrets.KANE_ACCESS_KEY }}
+          PROJECT: ${{ vars.KANE_PROJECT_ID }}
+          FOLDER: ${{ vars.KANE_FOLDER_ID }}
+        run: |
+          kane-cli login --username "$KANE_USERNAME" --access-key "$KANE_ACCESS_KEY" \
+            ${PROJECT:+--project-id "$PROJECT"} ${FOLDER:+--folder-id "$FOLDER"} < /dev/null
+          kane-cli config set-target desktop
+      - name: Check Claude Code can sign in
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then echo "::error::Add CLAUDE_CODE_OAUTH_TOKEN as a repository secret."; exit 2; fi
+          echo "Reply with just the word ready." | claude -p
+      - name: Start Mlyfo (dev mode, local database)
+        run: |
+          npm run dev > dev.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3100/ && break; sleep 2; done
+          # Compile the pages the Shield test visits, so Kane doesn't wait on the first build.
+          for u in "/signin?demo=1" /app /app/shield; do curl -s -o /dev/null -w "$u %{http_code} %{time_total}s\n" "http://localhost:3100$u"; done
+      - name: Break Shield, let Kane and Claude Code heal it
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          MLYFO_AGENT_CMD: claude -p --permission-mode acceptEdits
+        run: |
+          export KANE_CLI_CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          node scripts/break-and-heal.mjs
+      - name: Keep the drill's files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heal
+          path: |
+            kane/results/heal
+            dev.log
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Save the story to the repo
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          git checkout -- lib/shield.ts 2>/dev/null || true
+          [ -f kane/results/heal/story.json ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f kane/results/heal/story.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Self-heal drill: $(node -p 'const s=require("./kane/results/heal/story.json"); s.healed ? "healed" : s.caught ? "caught, not healed" : "not caught"')"
+          git pull --rebase && git push

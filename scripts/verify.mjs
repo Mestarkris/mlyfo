@@ -93,7 +93,8 @@ for (const { t, device } of runs) {
 
 const prev = (() => { try { return JSON.parse(fs.readFileSync(path.join(OUT, "latest.json"), "utf8")); } catch { return null; } })();
 const failed = results.filter((r) => r.status !== "passed").map((r) => `${r.file}${r.device === "phone" ? " (phone)" : ""}`);
-const loop = attempt > 1 && prev?.loop ? [...prev.loop, { attempt, failed }] : [{ attempt, failed }];
+const reasons = results.filter((r) => r.status !== "passed").map((r) => r.summary);
+const loop = attempt > 1 && prev?.loop ? [...prev.loop, { attempt, failed, reasons }] : [{ attempt, failed, reasons }];
 // Partial run against the same site: keep the results we didn't re-run.
 const key = (r) => `${r.file}|${r.device ?? "web"}`;
 const ran = new Set(results.map(key));
