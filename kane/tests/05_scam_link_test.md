@@ -1,6 +1,7 @@
 ---
 name: Shield flags a fake Phantom airdrop link as dangerous
 tags: [smoke, shield]
+devices: [web, phone]
 ---
 Go to {{baseUrl}}/signup
 Type "Link Tester" into the Full name field

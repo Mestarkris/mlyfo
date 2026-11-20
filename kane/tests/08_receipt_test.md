@@ -1,6 +1,7 @@
 ---
 name: A payment gives a receipt with an ID and a public receipt page
 tags: [smoke, money, receipts]
+devices: [web, phone]
 ---
 Go to {{baseUrl}}/signup
 Type "Receipt Tester" into the Full name field

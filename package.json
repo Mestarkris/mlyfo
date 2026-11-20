@@ -9,6 +9,7 @@
     "reset": "rm -f data/mlyfo.db data/mlyfo.db-wal data/mlyfo.db-shm",
     "verify": "node scripts/verify.mjs",
     "loop": "node scripts/loop.mjs",
+    "heal": "node scripts/break-and-heal.mjs",
     "typecheck": "tsc --noEmit",
     "ship": "node scripts/loop.mjs && next build"
   },
@@ -25,7 +26,8 @@
   "devDependencies": {
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "ws": "^8.23.0"
   },
   "engines": {
     "node": ">=22.13"

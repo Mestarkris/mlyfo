@@ -1,6 +1,7 @@
 ---
 name: New user can sign up and lands on a funded dashboard
 tags: [smoke, auth]
+devices: [web, phone]
 ---
 Go to {{baseUrl}}/signup
 Type "Kane Tester" into the Full name field

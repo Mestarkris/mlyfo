@@ -1,0 +1,140 @@
+# Kane verifies Mlyfo on GitHub's machines instead of a laptop.
+# Every test runs on its own runner, in parallel: desktop Chrome, plus a phone for tests marked
+# `devices: [web, phone]`. A last job merges the results and commits kane/results/latest.json,
+# which /app/verified shows. A failing test turns this check red.
+#
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   KANE_USERNAME, KANE_ACCESS_KEY   your TestMu AI username and access key
+# and, optionally, two variables: KANE_PROJECT_ID, KANE_FOLDER_ID (where Kane files the tests).
+name: Kane verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Site to test
+        default: https://mlyfo.vercel.app
+      devices:
+        description: Which devices
+        type: choice
+        options: [all, web, phone]
+        default: all
+      tests:
+        description: Only tests whose file name contains this (blank for all)
+        default: ""
+  push:
+    branches: [main]
+    paths: [app/**, components/**, lib/**, kane/tests/**, scripts/verify.mjs, scripts/phone-relay.mjs]
+
+concurrency:
+  group: kane
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  MLYFO_URL: ${{ inputs.url || 'https://mlyfo.vercel.app' }}
+  KANE_CLI_VERSION: 0.10.6
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      runs: ${{ steps.plan.outputs.runs }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        name: List each test and device to run
+        env:
+          DEVICES: ${{ inputs.devices || 'all' }}
+          FILTER: ${{ inputs.tests || '' }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const runs = [];
+            for (const f of fs.readdirSync("kane/tests").filter((f) => f.endsWith("_test.md")).sort()) {
+              if (process.env.FILTER && !f.includes(process.env.FILTER)) continue;
+              const fm = fs.readFileSync("kane/tests/" + f, "utf8").match(/devices:\s*\[([^\]]*)\]/);
+              const devices = fm ? fm[1].split(",").map((d) => d.trim()) : ["web"];
+              for (const d of devices) if (process.env.DEVICES === "all" || process.env.DEVICES === d)
+                runs.push({ test: f.replace("_test.md", ""), device: d, id: f.replace("_test.md", "") + "-" + d });
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "runs=" + JSON.stringify(runs) + "\n");
+            console.log(runs.length + " runs:", runs.map((r) => r.id).join(", "));
+          '
+
+  kane:
+    needs: plan
+    if: needs.plan.outputs.runs != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        run: ${{ fromJson(needs.plan.outputs.runs) }}
+    name: ${{ matrix.run.test }} (${{ matrix.run.device }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm install -g @testmuai/kane-cli@${KANE_CLI_VERSION}
+      - name: Sign in to Kane
+        env:
+          KANE_USERNAME: ${{ secrets.KANE_USERNAME }}
+          KANE_ACCESS_KEY: ${{ secrets.KANE_ACCESS_KEY }}
+          PROJECT: ${{ vars.KANE_PROJECT_ID }}
+          FOLDER: ${{ vars.KANE_FOLDER_ID }}
+        run: |
+          if [ -z "$KANE_USERNAME" ] || [ -z "$KANE_ACCESS_KEY" ]; then
+            echo "::error::Add KANE_USERNAME and KANE_ACCESS_KEY as repository secrets."; exit 2
+          fi
+          kane-cli login --username "$KANE_USERNAME" --access-key "$KANE_ACCESS_KEY" \
+            ${PROJECT:+--project-id "$PROJECT"} ${FOLDER:+--folder-id "$FOLDER"} < /dev/null
+          kane-cli config set-target desktop
+      - name: Run Kane (${{ matrix.run.device }})
+        env:
+          MLYFO_RESULTS: kane-out/${{ matrix.run.id }}
+        run: |
+          export KANE_CLI_CHROME_PATH="$(command -v google-chrome || command -v chromium)"
+          node scripts/verify.mjs "${{ matrix.run.test }}" "--${{ matrix.run.device }}"
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kane-${{ matrix.run.id }}
+          path: kane-out/${{ matrix.run.id }}
+          if-no-files-found: ignore
+          retention-days: 14
+
+  report:
+    needs: kane
+    if: always() && needs.kane.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: kane-*
+          path: kane-parts
+      - name: Merge results
+        id: merge
+        run: node scripts/merge-results.mjs kane-parts
+        continue-on-error: true
+      - name: Save results to the repo
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kane/results/latest.json kane/results/*.ndjson
+          git diff --cached --quiet && exit 0
+          git commit -m "Kane results: $(node -p 'const r=require("./kane/results/latest.json"); r.passed+"/"+r.total+" passed"')"
+          git pull --rebase && git push
+      - name: Fail if any test failed
+        if: steps.merge.outcome == 'failure'
+        run: exit 1

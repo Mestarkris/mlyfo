@@ -5,12 +5,15 @@
 //   MLYFO_AGENT_CMD   command that receives the fix request on stdin
 //                     (default: "claude -p --permission-mode acceptEdits")
 //   MLYFO_MAX_ATTEMPTS  default 3
+//   MLYFO_RESULTS       results folder (default kane/results)
+// Arguments are passed to verify.mjs, e.g. `npm run loop -- 03_shield --web`.
 import { spawnSync, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const OUT = path.join(ROOT, "kane", "results");
+const OUT = process.env.MLYFO_RESULTS ? path.resolve(ROOT, process.env.MLYFO_RESULTS) : path.join(ROOT, "kane", "results");
+const ARGS = process.argv.slice(2);
 const MAX = Number(process.env.MLYFO_MAX_ATTEMPTS ?? 3);
 const AGENT = process.env.MLYFO_AGENT_CMD ?? "claude -p --permission-mode acceptEdits";
 
@@ -25,8 +28,8 @@ function fixRequest(report) {
   const failed = report.tests.filter((t) => t.status !== "passed");
   const parts = failed.map((t) => {
     const spec = fs.readFileSync(path.join(ROOT, "kane", "tests", t.file), "utf8");
-    const log = (() => { try { return fs.readFileSync(path.join(OUT, t.file.replace("_test.md", ".ndjson")), "utf8").split("\n").slice(-40).join("\n"); } catch { return ""; } })();
-    return `## ${t.name} (${t.file})\nKane result: ${t.summary}\nFailed step: ${t.failedStep ?? "unknown"}\nEvidence: ${t.testUrl ?? "none"}\n\nTest:\n${spec}\n\nLast Kane events:\n${log}`;
+    const log = (() => { try { return fs.readFileSync(path.join(OUT, t.log ?? t.file.replace("_test.md", ".ndjson")), "utf8").split("\n").slice(-40).join("\n"); } catch { return ""; } })();
+    return `## ${t.name} (${t.file}, ${t.device === "phone" ? "on a phone" : "desktop browser"})\nKane result: ${t.summary}\nFailed step: ${t.failedStep ?? "unknown"}\nEvidence: ${t.testUrl ?? "none"}\n\nTest:\n${spec}\n\nLast Kane events:\n${log}`;
   });
   return `You are fixing the Mlyfo app in ${ROOT} (Next.js app router, see PRODUCT.md).
 Kane CLI ran these plain-English tests in a real browser and they failed.
@@ -47,7 +50,7 @@ function runAgent(prompt) {
 
 for (let attempt = 1; attempt <= MAX; attempt++) {
   console.log(`\n━━ Kane verification, attempt ${attempt} of ${MAX} ━━`);
-  const code = verify(attempt);
+  const code = verify(attempt, ARGS);
   if (code === 0) { console.log("\n✓ Kane approved this build. Safe to ship."); process.exit(0); }
   if (code === 2) { console.error("\nKane couldn’t run. Fix the setup above, then run npm run loop again."); process.exit(2); }
 

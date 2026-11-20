@@ -1,6 +1,7 @@
 ---
 name: Shield blocks a look-alike of a saved contact's address
 tags: [smoke, shield]
+devices: [web, phone]
 ---
 Go to {{baseUrl}}/signin?demo=1
 Click the "Sign in" button
