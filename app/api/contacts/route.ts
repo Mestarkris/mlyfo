@@ -1,5 +1,5 @@
 import { q } from "@/lib/db";
-import { isSolanaAddress } from "@/lib/crypto";
+import { chainOf, normalizeAddress } from "@/lib/chains";
 import { checkAddress } from "@/lib/shield";
 import { json, bad, body, withUser } from "@/lib/http";
 
@@ -21,7 +21,8 @@ export async function POST(req: Request) {
       address = other.address; label ||= other.name.split(" ")[0]; source = "mlyfo";
     }
     if (!label) return bad("Give this person a name.");
-    if (!isSolanaAddress(address)) return bad("That isn’t a valid Solana address.");
+    if (!chainOf(address)) return bad("That isn’t a valid Solana, Ethereum or Base address.");
+    address = normalizeAddress(address);
     const clash = await q.get<{ address: string }>("SELECT address FROM contacts WHERE user_id = ? AND lower(label) = lower(?)", u.id, label);
     if (clash && clash.address !== address) return bad(`You already have a contact called ${label}. Use a different name.`, 409);
     const shield = await checkAddress(u, address);

@@ -1,19 +1,26 @@
 import { q } from "./db";
-import { isSolanaAddress } from "./crypto";
+import { chainOf, evmChecksumOk, looksAlike, normalizeAddress, type Chain } from "./chains";
 import { DEMO } from "./seed";
 import type { User } from "./auth";
 
 export type Finding = { level: "ok" | "info" | "warn" | "block"; code: string; message: string };
 
 /** Addresses reported as drainers or scams. Real deployments would sync a feed. */
-const SCAM_ADDRESSES = new Set([DEMO.scam]);
+const SCAM_ADDRESSES = new Set([DEMO.scam, DEMO.scamEvm]);
 
-export async function checkAddress(user: User, address: string): Promise<{ findings: Finding[]; known: boolean; contact?: string }> {
+export type AddressCheck = { findings: Finding[]; known: boolean; contact?: string; chain?: Chain; address?: string; twin?: string };
+
+export async function checkAddress(user: User, address: string): Promise<AddressCheck> {
   const findings: Finding[] = [];
-  const a = address.trim();
-  if (!isSolanaAddress(a)) {
-    return { findings: [{ level: "block", code: "invalid", message: "This isn’t a valid Solana address." }], known: false };
+  const raw = address.trim();
+  const chain = chainOf(raw);
+  if (!chain) {
+    return { findings: [{ level: "block", code: "invalid", message: "This isn’t a valid Solana, Ethereum or Base address." }], known: false };
   }
+  if (chain === "evm" && !evmChecksumOk(raw)) {
+    return { findings: [{ level: "block", code: "checksum", message: "This Ethereum address fails its checksum: a character was changed or mistyped." }], known: false, chain };
+  }
+  const a = normalizeAddress(raw);
   if (a === user.address) {
     findings.push({ level: "block", code: "self", message: "This is your own address." });
   }
@@ -22,12 +29,19 @@ export async function checkAddress(user: User, address: string): Promise<{ findi
   }
   const contacts = await q.all<{ label: string; address: string }>("SELECT label, address FROM contacts WHERE user_id = ?", user.id);
   const exact = contacts.find((c) => c.address === a);
+  let twinAddress: string | undefined;
   if (!exact && user.shield_lookalike) {
-    const twin = contacts.find((c) => c.address.slice(0, 4) === a.slice(0, 4) && c.address.slice(-4) === a.slice(-4));
+    // Solana: same first and last 4 characters. Ethereum and Base: same 4 after "0x" and last 4, in any case.
+    const twin = contacts.find((c) => chain === "evm"
+      ? looksAlike(c.address, a)
+      : chainOf(c.address) === "solana" && c.address.slice(0, 4) === a.slice(0, 4) && c.address.slice(-4) === a.slice(-4));
     if (twin) {
+      twinAddress = twin.address;
       findings.push({
         level: "block", code: "lookalike",
-        message: `This looks like ${twin.label}’s saved address but isn’t. The first and last 4 characters match and the middle doesn’t.`,
+        message: chain === "evm"
+          ? `This looks like ${twin.label}’s saved address but isn’t. The first 4 characters after 0x and the last 4 match and the middle doesn’t.`
+          : `This looks like ${twin.label}’s saved address but isn’t. The first and last 4 characters match and the middle doesn’t.`,
       });
     }
   }
@@ -36,7 +50,7 @@ export async function checkAddress(user: User, address: string): Promise<{ findi
     findings.push({ level: "warn", code: "new", message: "You’ve never paid this address before." });
   }
   if (findings.length === 0) findings.push({ level: "ok", code: "known", message: exact ? `Matches ${exact.label}’s saved address.` : "You’ve paid this address before." });
-  return { findings, known: !!exact || paidBefore, contact: exact?.label };
+  return { findings, known: !!exact || paidBefore, contact: exact?.label, chain, address: a, twin: twinAddress };
 }
 
 /** Mismatch positions between an address and its look-alike contact, for highlighting. */
@@ -44,7 +58,7 @@ export function diffMask(a: string, b: string): boolean[] {
   return [...a].map((ch, i) => ch !== b[i]);
 }
 
-const TRUSTED = ["phantom.app", "solflare.com", "jup.ag", "solana.com", "mlyfo.app", "magiceden.io", "tensor.trade"];
+const TRUSTED = ["phantom.app", "solflare.com", "jup.ag", "solana.com", "mlyfo.app", "magiceden.io", "tensor.trade", "metamask.io", "uniswap.org", "coinbase.com", "etherscan.io", "basescan.org", "ethereum.org", "opensea.io"];
 const BAD_WORDS = ["airdrop", "claim", "verify-wallet", "walletconnect-", "seed", "recovery", "drainer", "free-sol", "giveaway"];
 
 function lev(a: string, b: string) {

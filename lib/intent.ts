@@ -9,7 +9,7 @@ export type Intent =
   | { kind: "none" };
 
 const money = (s: string) => Math.round(parseFloat(s.replace(/[,$]/g, "")) * 100);
-const ADDR = /\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/;
+const ADDR = /\b0x[0-9a-fA-F]{40}\b|\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/;
 
 export function parseIntent(text: string): Intent {
   const t = text.trim();

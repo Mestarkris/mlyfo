@@ -2,6 +2,7 @@ import { q, tx, type Q } from "./db";
 import { checkAddress, type Finding } from "./shield";
 import { userById, type User } from "./auth";
 import { token } from "./crypto";
+import { chainOf } from "./chains";
 
 export const fmt = (c: number) =>
   (c < 0 ? "−" : "") + "$" + (Math.abs(c) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -91,6 +92,8 @@ async function sendInner(user: User, to: string, amountCents: number, opts: { no
   if (!Number.isInteger(amountCents) || amountCents <= 0) return { status: "blocked", findings: [], reasons: ["Enter an amount above $0."] };
   const rec = await resolveRecipient(user, to);
   if ("error" in rec) return { status: "blocked", findings: [], reasons: [rec.error], choices: rec.choices };
+  // Shield checks Ethereum and Base addresses, but Mlyfo only pays on Solana so far.
+  if (chainOf(rec.address) === "evm") return { status: "blocked", findings: [], reasons: [`${rec.label} is an Ethereum and Base address. Shield can check it, but Mlyfo pays on Solana for now.`] };
   const shield = await checkAddress(user, rec.address);
   const blockers = shield.findings.filter((f) => f.level === "block");
   const ins = { run: (...a: unknown[]) => q.run(

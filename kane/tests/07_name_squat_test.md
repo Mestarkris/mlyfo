@@ -11,7 +11,7 @@ Click "Create account"
 Go to {{baseUrl}}/app/people
 Click "Any wallet"
 Type "Semi" into the Name field
-Type "SemiMumW7pQ2vRm9xLwT4nBc8ZsY3hJfUe6GdN1oPq5Q" into the "Solana address" field
+Type "SemiMumW7pQ2vRm9xLwT4nBc8ZsY3hJfUe6GdN1oPq5Q" into the "Wallet address" field
 Click "Save person"
 Assert the page says "Saved Semi"
 Go to {{baseUrl}}/app/pad

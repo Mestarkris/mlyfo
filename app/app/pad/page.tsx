@@ -13,7 +13,8 @@ const SCRIPT: Record<string, { opener: string }> = {
   ada: { opener: `new wallet, send here pls ${DEMO.adaFake}` },
 };
 
-export default async function PadPage() {
+export default async function PadPage({ searchParams }: { searchParams: Promise<{ text?: string }> }) {
+  const { text } = await searchParams;
   const u = (await currentUser())!;
   const users = await q.all<{ handle: string; name: string; address: string }>("SELECT handle, name, address FROM users WHERE handle IN ('zoya','semi','kabir','sofia','ada') AND id != ?", u.id);
   const order = ["zoya", "semi", "ada", "kabir", "sofia"];
@@ -29,7 +30,7 @@ export default async function PadPage() {
   return (
     <>
       <div className="main-top"><h1>Mlyfo Pad</h1></div>
-      <Pad friends={friends} me={u.handle} aiModel={aiEnabled() ? MODEL : null} />
+      <Pad friends={friends} me={u.handle} aiModel={aiEnabled() ? MODEL : null} initialText={text?.slice(0, 280)} />
     </>
   );
 }

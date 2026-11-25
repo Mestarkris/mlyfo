@@ -38,7 +38,7 @@ export function AddPerson() {
       ) : (
         <div className="row-form">
           <input aria-label="Name" placeholder="Name" value={label} onChange={(e) => setLabel(e.target.value)} required style={{ maxWidth: 180 }} />
-          <input aria-label="Solana address" placeholder="Solana address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          <input aria-label="Wallet address" placeholder="Solana, Ethereum or Base address" value={address} onChange={(e) => setAddress(e.target.value)} required />
           <button className="btn btn-ink btn-sm" disabled={busy}>{busy ? "Checking…" : "Save person"}</button>
         </div>
       )}

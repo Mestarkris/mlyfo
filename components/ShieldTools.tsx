@@ -1,19 +1,22 @@
 "use client";
 import Icon from "./Icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "./api";
 
 type Finding = { level: string; code: string; message: string };
 
-export function AddressCheck() {
-  const [addr, setAddr] = useState("");
-  const [res, setRes] = useState<{ findings: Finding[]; twin: string | null } | null>(null);
+export function AddressCheck({ initial }: { initial?: string } = {}) {
+  const [addr, setAddr] = useState(initial ?? "");
+  const [res, setRes] = useState<{ findings: Finding[]; twin: string | null; chain?: "solana" | "evm"; address?: string } | null>(null);
+  const check = async (a: string) => { const r = await api("/api/shield/address", "POST", { address: a }); setRes(r.data); };
+  // An address handed over from the Android keyboard (/k?address=…) is checked straight away.
+  useEffect(() => { if (initial) check(initial); }, [initial]); // eslint-disable-line react-hooks/exhaustive-deps
   const top = res?.findings.find((f) => f.level === "block") ?? res?.findings.find((f) => f.level === "warn") ?? res?.findings[0];
   return (
     <div data-testid="address-check">
-      <form className="row-form" onSubmit={async (e) => { e.preventDefault(); const r = await api("/api/shield/address", "POST", { address: addr }); setRes(r.data); }}>
-        <input aria-label="Solana address to check" placeholder="Paste a Solana address" value={addr} onChange={(e) => setAddr(e.target.value)} required />
+      <form className="row-form" onSubmit={async (e) => { e.preventDefault(); await check(addr); }}>
+        <input aria-label="Address to check" placeholder="Paste a Solana, Ethereum or Base address" value={addr} onChange={(e) => setAddr(e.target.value)} required />
         <button className="btn btn-ink btn-sm">Check address</button>
       </form>
       {res && top && (
@@ -21,10 +24,11 @@ export function AddressCheck() {
           <Icon name={top.level === "ok" ? "check" : "alert"} />
           <div>
             <b>{top.level === "block" ? "Blocked" : top.level === "warn" ? "Check before sending" : "Looks fine"}.</b>{" "}
+            {res.chain && <span className="chain-tag" data-testid="address-chain">{res.chain === "evm" ? "Ethereum · Base" : "Solana"}</span>}{" "}
             {res.findings.map((f) => f.message).join(" ")}
             {res.twin && (
               <div className="addr" style={{ marginTop: 8 }}>
-                {[...addr.trim()].map((c, i) => <span key={i} className={c !== res.twin![i] ? "x" : ""}>{c}</span>)}
+                {[...(res.address ?? addr.trim())].map((c, i) => <span key={i} className={c.toLowerCase() !== res.twin![i]?.toLowerCase() ? "x" : ""}>{c}</span>)}
               </div>
             )}
           </div>
@@ -83,7 +87,7 @@ export function AddContact() {
       setF({ label: "", address: "" }); router.refresh();
     }}>
       <input aria-label="Contact name" placeholder="Name" value={f.label} onChange={(e) => setF({ ...f, label: e.target.value })} style={{ maxWidth: 140 }} required />
-      <input aria-label="Contact address" placeholder="Solana address" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} required />
+      <input aria-label="Contact address" placeholder="Solana, Ethereum or Base address" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} required />
       <button className="btn btn-ghost btn-sm">Save contact</button>
       {err && <div className="err" role="alert" style={{ width: "100%" }}>{err}</div>}
     </form>

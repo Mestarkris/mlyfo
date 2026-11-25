@@ -6,3 +6,5 @@ mockup
 kane/results/*.ndjson
 kane/results/fix-request.md
 .env*
+video
+android

@@ -6,7 +6,7 @@ devices: [web, phone]
 Go to {{baseUrl}}/signin?demo=1
 Click the "Sign in" button
 Go to {{baseUrl}}/app/shield
-Type "AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx" into the "Paste a Solana address" field
+Type "AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx" into the "Paste a Solana, Ethereum or Base address" field
 Click "Check address"
 Assert the result says "Blocked"
 Assert the result says it looks like Ada’s saved address but isn’t

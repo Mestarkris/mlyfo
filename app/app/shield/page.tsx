@@ -4,20 +4,23 @@ import { contacts, linkScans } from "@/lib/queries";
 import Link from "next/link";
 import { AddressCheck, LinkScan } from "@/components/ShieldTools";
 
-export default async function Shield() {
+export default async function Shield({ searchParams }: { searchParams: Promise<{ address?: string }> }) {
+  const { address } = await searchParams;
   const u = (await currentUser())!;
   const [cs, scans] = await Promise.all([contacts(u.id), linkScans(u.id)]);
   return (
     <>
       <div className="main-top"><h1>Shield</h1></div>
-      <p className="sub" style={{ marginTop: 8, maxWidth: "62ch" }}>Shield checks every address and link before money moves. Saved contacts are how it spots a look-alike, so save the people you pay often.</p>
+      <p className="sub" style={{ marginTop: 8, maxWidth: "62ch" }}>Shield checks every Solana, Ethereum and Base address, and every link, before money moves. Saved contacts are how it spots a look-alike, so save the people you pay often.</p>
       <div className="grid">
-        <div className="c span2"><h3>Check an address</h3><AddressCheck /></div>
+        <div className="c span2"><h3>Check an address</h3><AddressCheck initial={address?.trim().slice(0, 64)} /></div>
         <div className="c"><h3>Try these</h3>
           <div className="sub" style={{ marginTop: 8 }}>A look-alike of Ada (demo account):</div>
           <div className="addr">AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx</div>
           <div className="sub" style={{ marginTop: 8 }}>A scam-list address:</div>
           <div className="addr">ScAm1111DrainerXYZbad9pLmQ8rTvB3nYc7HsP4kJe6</div>
+          <div className="sub" style={{ marginTop: 8 }}>A look-alike of Ada’s Base wallet:</div>
+          <div className="addr">0x7a3f9cE5b801Dd3fA7426C9e0B1f8a5d3e27c4b9</div>
         </div>
         <div className="c span2" style={{ gridColumn: "1 / -1" }}><h3>Scan a link</h3>
           <p className="sub" style={{ marginTop: 6 }}>Quick check looks at the address. Deep scan has Kane open the page in a real browser and report whether it asks for your seed phrase or wallet.</p>

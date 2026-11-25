@@ -28,14 +28,15 @@ const ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
 
 type Ai = { text: string; intent: Intent; source: "model" | "rules" };
 
-export default function Pad({ friends, me, aiModel }: { friends: Friend[]; me: string; aiModel: string | null }) {
+export default function Pad({ friends, me, aiModel, initialText }: { friends: Friend[]; me: string; aiModel: string | null; initialText?: string }) {
   const router = useRouter();
   const [fi, setFi] = useState(0);
   const [screen, setScreen] = useState<"list" | "chat">("chat");
   const msgsRef = useRef<HTMLDivElement>(null);
   const friend = friends[fi];
   const [threads, setThreads] = useState<Record<string, Msg[]>>(() => Object.fromEntries(friends.map((f) => [f.key, f.opener ? [{ from: "them", text: f.opener }] : []])));
-  const [text, setText] = useState("");
+  // Text handed over from the Android keyboard (/k?text=…) arrives already typed.
+  const [text, setText] = useState(initialText ?? "");
   const [result, setResult] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
   const [down, setDown] = useState<string | null>(null);

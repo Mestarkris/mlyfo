@@ -245,6 +245,7 @@ footer .wrap span:first-child{margin-right:auto}
 .row-form input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(11,156,138,.18)}
 .addr{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;word-break:break-all;letter-spacing:.01em}
 .addr .x{background:var(--amber-soft);color:var(--amber);border-radius:3px}
+.chain-tag{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;padding:1px 7px;border-radius:6px;border:1px solid currentColor;opacity:.75;vertical-align:1px}
 .side form{margin:0}
 .side button.linklike{all:unset;cursor:pointer;color:var(--mute);font-size:13px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:60;box-shadow:0 12px 30px -12px rgba(0,0,0,.4);animation:toast .25s ease}

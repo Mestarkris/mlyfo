@@ -1,7 +1,7 @@
 import { createClient, type Client, type InArgs, type Transaction } from "@libsql/client";
 import fs from "node:fs";
 import path from "node:path";
-import { seed } from "./seed";
+import { DEMO, seed } from "./seed";
 
 /**
  * Storage. Locally this is a SQLite file in data/ (no setup needed).
@@ -122,6 +122,8 @@ async function open(): Promise<Client> {
   await c.executeMultiple(SCHEMA);
   // Columns added after launch. ADD COLUMN fails when the column exists, which is the expected case.
   for (const m of MIGRATIONS) { try { await c.execute(m); } catch (e) { if (!/duplicate column/i.test(String(e))) throw e; } }
+  // Shield learned Ethereum and Base after launch: the demo account gets Ada's Base wallet as a saved person.
+  await c.execute({ sql: "INSERT OR IGNORE INTO contacts (user_id,label,address,emoji,source,created_at) SELECT id,'Ada (Base)',?,'🎁','saved',datetime('now') FROM users WHERE id = 1 AND email = ?", args: [DEMO.adaEvm, DEMO.email] });
   const n = Number((await c.execute("SELECT COUNT(*) AS n FROM users")).rows[0].n);
   if (n === 0) {
     try { await c.batch(seed(), "write"); }
