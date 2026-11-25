@@ -1,8 +1,8 @@
 {
-  "startedAt": "2026-11-25T12:31:10.305Z",
-  "finishedAt": "2026-11-25T12:38:40.935Z",
+  "startedAt": "2026-11-25T12:40:01.618Z",
+  "finishedAt": "2026-11-25T12:47:23.114Z",
   "baseUrl": "https://mlyfo.vercel.app",
-  "total": 17,
+  "total": 18,
   "passed": 17,
   "phone": {
     "name": "iPhone 15 (Safari)",
@@ -11,7 +11,7 @@
     "scale": 3,
     "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
   },
-  "runner": "https://github.com/Mestarkris/mlyfo/actions/runs/45614430968",
+  "runner": "https://github.com/Mestarkris/mlyfo/actions/runs/45615873535",
   "tests": [
     {
       "name": "New user can sign up and lands on a funded dashboard",
@@ -20,9 +20,22 @@
       "deviceName": "Desktop Chrome",
       "log": "01_signup.ndjson",
       "status": "passed",
-      "summary": "Created an account as Kane Tester using the provided email address and username.\nConfirmed that @kanew3r95g was available before completing registration.\nCompleted account creation successfully.\nReached the welcome page for Kane, where the wallet balance displayed $500.00.",
-      "duration": 78.4,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B0VY1FQMRP7N9DABA8Y3V/dashboard/share/US_K517YC4PGB55LTIYSOTZT1LJ6TYHNCP83L9SLPYBNXIID54FH2IF93VVH1QE7XG8?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Completed the requested registration using the name Kane Tester, email kanew42ppy@mlyfo.app, and username kanew42ppy.\nConfirmed that the username @kanew42ppy was available before creating the account.\nCreated the account with the provided password.\nThe account opened successfully with the heading “Welcome, Kane” and a wallet balance of $500.00.",
+      "duration": 71.1,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BH4QR4GSYNWS8SKKXN5G9/dashboard/share/US_YOXGLLSC2ZNN19JMJ7AFNGAI9C1EL22Q2TTKVWM2SHH88UP6FCV4IRSLDXFTUBMP?type=summary&agentView=true&fqdn=summary-page",
+      "attempt": 1,
+      "failedStep": null
+    },
+    {
+      "name": "New user can sign up and lands on a funded dashboard",
+      "file": "01_signup_test.md",
+      "device": "phone",
+      "deviceName": "iPhone 15 (Safari)",
+      "log": "01_signup.phone.ndjson",
+      "status": "passed",
+      "summary": "You asked to create an account for Kane Tester using the provided email address and username.\nEntered the full name, email address, and username; the username was confirmed as available.\nEntered the password and created the account.\nThe account was created successfully, showing “Welcome, Kane” with a wallet balance of $500.00.",
+      "duration": 71,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BGRNRMV6B4BFBJM6PS48T/dashboard/share/US_OX6P716WR7ZA8NCLN55V8L3LPWCCX6FINAT2ZOIRA9OJM81RTRDV67NTNAQH4QO9?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -33,9 +46,9 @@
       "deviceName": "Desktop Chrome",
       "log": "02_split.ndjson",
       "status": "passed",
-      "summary": "Created the split requested for “Kane dinner w3r7t9” with a total of $236 and participants zoya, kabir, and sofia.\nConfirmed the total was divided among 4 people at $59.00 each.\nThe new split is listed as “1 of 4 paid,” with zoya, kabir, and sofia each owing $59.00 and each having a Copy link button.",
-      "duration": 150.9,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B0KPQM9MWQ2MC121JKC9S/dashboard/share/US_JXHY07S7ZVTQ26ZSVJR5ERYYEAEVWU7KWKUFLWYK18BDOIK0PUMQB63RP6W7BMN4?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Created the requested split for “Kane dinner w42p91” with a total of $236, shared with zoya, kabir, and sofia.\nThe form calculated four people at $59.00 each.\nThe new split is listed as “1 of 4 paid,” with $59.00 and a Copy link button available for zoya, kabir, and sofia.",
+      "duration": 128.5,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BHA2MWDB1HTD96NDCXX51/dashboard/share/US_XTLDYXMK962BF0HO1R8VN47D0NE0L7ETAWBSMDA0GJKMOGD8AFL3UT790HF1QA17?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -46,9 +59,9 @@
       "deviceName": "Desktop Chrome",
       "log": "03_shield_lookalike.ndjson",
       "status": "passed",
-      "summary": "Opened the Shield address-check page and entered the provided wallet address.\nChecked the address.\nThe result marked the address as “Blocked” and said it looks like Ada’s saved address but is not the same address.",
-      "duration": 70.3,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B16S1EP268WW7C0QCXYA4/dashboard/share/US_DGRWVT8069N0Y8816UXFTJREFWW5001MY485DZITHACREETPIFA3EHFA4RDGPUTS?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Opened the sign-in flow, then navigated to the Shield address-checking page.\nEntered the provided wallet address and selected “Check address.”\nThe address was marked “Blocked,” with a warning that it looks like Ada’s saved address but is not.\nThe check was completed on the Shield page.",
+      "duration": 57.7,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BH415T2SPQJZCGXZ6Z6ZM/dashboard/share/US_9KBUGVOGB2660N66UOVN89ZI0325ZRT8DYF84P4FV3WJS33P8Y40Q0TY8TS14PJG?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -59,9 +72,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "03_shield_lookalike.phone.ndjson",
       "status": "passed",
-      "summary": "Opened the sign-in page, then went to the address-checking page as requested.\nEntered the provided wallet address and selected “Check address.”\nThe result marked the address as “Blocked” and said it looks like Ada’s saved address but is not.",
-      "duration": 69.1,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B0HYYTPKZ7RDDVDQA3ERK/dashboard/share/US_E0CNIZ25Z6A04BON08F62YGSI91GXWW29CK7D3FJP3BQSCCNIK02E1KQCE3IGKTJ?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to sign in and check the supplied wallet address on the Shield page.\nThe address was entered into the address-check field and submitted.\nThe check marked the address as “Blocked” and warned: “This looks like Ada’s saved address but isn’t.”",
+      "duration": 68.6,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BH1JBHFGDRXH6FBA3H3C4/dashboard/share/US_3VYYQRUTA5OQA9JO6HVP264XCRZ7LA0B7O5H1SKDTCRSGAGJ0H559PHWLUNFUIOH?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -72,9 +85,9 @@
       "deviceName": "Desktop Chrome",
       "log": "04_spend_limit.ndjson",
       "status": "passed",
-      "summary": "You asked to send $150 to @ada for rent.\nEntered the payment message and selected the $150 payment option.\nThe confirmation screen showed that the amount exceeded the $100 per-payment limit and the $25 limit for new recipients.\nEntered the password and confirmed the payment.\nThe payment was completed, with the page showing “Sent $150.00 to @ada.”",
-      "duration": 128.1,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B0T8V82C38RZAWT5Q6853/dashboard/share/US_MQE00SK7M8A7DFBH9F7E1HS3G4YU5VQGKPIH7LXVR85QURROPKK14D8FX87M9F7Z?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to send $150.00 to @ada for rent using the message “pay @ada 150 for rent.”\nThe payment was initiated, and the confirmation screen showed “Confirm $150.00 to @ada” along with the per-payment limit notice.\nThe password was entered and the payment was confirmed.\nThe payment completed successfully, with the page showing “Sent $150.00 to @ada.”",
+      "duration": 118.5,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BGZB3CV6KMBMJT3AV45TR/dashboard/share/US_22F9M0FSNACGB8Q8XUTUZGOG91O16QG78QAYWOJ2Z3WFL9M15XL1B5B49JF7MW0V?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -85,9 +98,9 @@
       "deviceName": "Desktop Chrome",
       "log": "05_scam_link.ndjson",
       "status": "passed",
-      "summary": "You asked to check the link https://phantorn-airdrop.app/claim using the Quick check option.\nThe link was entered and checked on the site.\nThe result marked the link as “Dangerous” and explained that the address imitates Phantom without being the real site.",
-      "duration": 95.4,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B1YXNJCBN0SN3M7T63JTJ/dashboard/share/US_4K4VQNLP6HRBEQ0VC24GTI229TUWS91WKX0GDUREQADMROPZT0IWYU6EAA3YR1KE?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to check the link https://phantorn-airdrop.app/claim using the site’s Quick check feature.\nEntered the link and ran the check.\nThe result marked the link as Dangerous and stated that the address imitates Phantom but is not the real site.",
+      "duration": 81.8,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BM3VXT948RVFJJXKVHMAR/dashboard/share/US_KY31LVVE6HYM9UQPXNQMZMHRP2YVJ9JHBWBKMHF4C1EFQ0Q5XEJOH5F8RXLZGD5P?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -98,9 +111,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "05_scam_link.phone.ndjson",
       "status": "passed",
-      "summary": "Checked the requested link, https://phantorn-airdrop.app/claim, using the Quick check option.\nThe scan marked the link as Dangerous.\nThe displayed reasons stated that the address imitates Phantom but is not the real site.",
-      "duration": 98.1,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B48SEHV091J7EJ0HJ3F8E/dashboard/share/US_TCP42IHWZPE3DCVMR99VML5U6AB2L6TK3VCUGM11UZ57MKC8FD12R8MA6XDG9X9G?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to check the safety of https://phantorn-airdrop.app/claim.\nEntered the link and selected Quick check.\nThe result marked the link as Dangerous and explained that the address imitates Phantom rather than being the real site.",
+      "duration": 126.3,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BME2V836PDWYC1666X5Y6/dashboard/share/US_QQJ6UIU07XR5598R9OJRM73598I3W0D4876RBFB3TGRP6MVAIJI028G8QNY26PE7?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -111,9 +124,9 @@
       "deviceName": "Desktop Chrome",
       "log": "06_contact_lookalike.ndjson",
       "status": "passed",
-      "summary": "Entered the name “Ada new” and the provided wallet address on the People page.\nClicked “Save person.”\nThe page reported that the address was not saved because it looked like Ada’s saved address.\n“Ada new” was not added to the list of people.",
-      "duration": 122.6,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B4XGGQJB82KTEVXV1Z4KK/dashboard/share/US_OBSRP3AQL6E85M8MKAL835LX837AJOZXTDK308WE65BHUN7436CHUWBQGQ7DUGRW?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Attempted to add a person named “Ada new” with the provided wallet address on the People page.\nSaved the person details.\nThe page reported that the address was not saved because it appears to be Ada’s saved address.\n“Ada new” was not added to the people list.",
+      "duration": 119.3,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BMRPCNR2MG5YZA5MR8GWG/dashboard/share/US_EW9ZX5EIE61XCGBA1LT7J53TXJX3SNH0Y9872F008B9LC9PECDYD3FMPZM35YHP9?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -124,9 +137,9 @@
       "deviceName": "Desktop Chrome",
       "log": "07_name_squat.ndjson",
       "status": "passed",
-      "summary": "Requested a $5 payment to Semi with the note “coffee.”\nEntered “pay semi 5 for coffee” and selected the $5.00 payment option.\nThe page asked which Semi was intended and showed both the saved contact and the Mlyfo user option.\nSelected “Your contact Semi,” and the payment was confirmed as sent.",
-      "duration": 143.6,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B5D20ZYGA1D53HEF5A7PG/dashboard/share/US_JEJPPXPLGU8UQ93GEBUE17ZWDUOTI60DPK6JZIQEZLJ7UM2RCKBN0BOSGASJLQ0P?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Requested a $5 payment for coffee to Semi.\nEntered “pay semi 5 for coffee” and selected the $5.00 payment option.\nWhen asked to choose between matching recipients, selected “Your contact Semi.”\nThe payment was completed, with the page confirming “Sent $5.00 to Semi.”",
+      "duration": 162.6,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BMMZBR1S54PC8R1DX11E6/dashboard/share/US_EC5NN9GR4IQLQST4DK36B4WNMQQUPR6QSOIB1CEYTXRAIGZOPBFFAXMXNRQCP3UF?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -137,9 +150,9 @@
       "deviceName": "Desktop Chrome",
       "log": "08_receipt.ndjson",
       "status": "passed",
-      "summary": "You asked to open the Receipt link in Recent activity.\nOpened the receipt page for a $10.00 payment to @kabir.\nThe receipt ID shown was MLY-QD8H-FHWX, which begins with “MLY-”.",
-      "duration": 133.1,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B63J9Z1S389JWQGHCCCD6/dashboard/share/US_DUNAUZUINJX6DQHNYQJFLSV82F4O2DCAO0EZG99YQSSR7FWO5RRNSQ16W52GKYAQ?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Opened the Receipt link from Recent activity as requested.\nThe receipt page confirmed a $10.00 payment to @kabir.\nThe receipt ID was shown as MLY-QQ42-KQLY.",
+      "duration": 133.5,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BP3NEA1NP1R7HS2RV58JV/dashboard/share/US_F00YNYAAI3AELE5EQL5YAL7FRMC9USN702XWLEN7SS83W4W4SWD91NWEGCTCGPEV?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -150,9 +163,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "08_receipt.phone.ndjson",
       "status": "passed",
-      "summary": "Opened the Receipt link from Recent activity as requested.\nThe receipt page confirmed a $10.00 payment to @kabir.\nThe receipt ID was shown as MLY-ZL2H-P9UG, which begins with “MLY-”.",
-      "duration": 141.1,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B6B389C5YZ54NJQCKY989/dashboard/share/US_RRRCLE53X1ZH52RX5BNCVQA3QFCPOM26HW7KCF9ASGWX025EUA4V5U5HNT6SKSC4?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to open the Receipt link from Recent activity.\nThe Receipt link was selected.\nThe receipt page displayed a $10.00 payment to @kabir with receipt ID MLY-GQTT-KET5.",
+      "duration": 127.9,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BPKR7F8WW2WC5FKPQ1RXP/dashboard/share/US_V7FAJXFHXDL49T4I8I931W2D1SO2JEPJMLLDMH5AA8DH5T4ANJ9Y7GQF6N1PQ0F5?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -163,9 +176,9 @@
       "deviceName": "Desktop Chrome",
       "log": "09_keyboard_handoff.ndjson",
       "status": "passed",
-      "summary": "You asked to sign in and check the address AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx.\nThe sign-in action was completed, and the address-check page opened.\nThe Shield page showed the supplied address in the address field.\nThe check result marked the address as “Blocked” and warned that it looks like Ada’s saved address but is not.",
-      "duration": 56.5,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B6HT8YAKMJD9RXDTVEW1G/dashboard/share/US_30JZR8VPQY6NZY8EIDC29J84WD6VSC1GRD33UHP99LY2ADYC3UFX0DSO318VEI47?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "The requested sign-in step was completed, then the address-check page was opened for AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx.\nThe Shield page displayed the supplied address in the address field.\nThe check marked the address as Blocked and warned that it looks like Ada’s saved address but is not the saved address.",
+      "duration": 48,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BQW3V3Q0R89ZJD34B1DFD/dashboard/share/US_LC1KHVCJO19QPWKSAQM3533D6LD6WGHPJWBI0961Y9PM4QJ6DQ64RG2F9UZN22RZ?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -176,9 +189,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "09_keyboard_handoff.phone.ndjson",
       "status": "passed",
-      "summary": "You asked to sign in and open the Shield address-check page for the supplied address.\nThe Shield page opened with the requested address filled into the address field.\nThe check completed and marked the address as “Blocked,” warning that it looks like Ada’s saved address but is not.",
-      "duration": 53.3,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B8R2TCE3JTKJE1H1B966W/dashboard/share/US_65EBG7AWOD7AVXJV28ZXXDGD3SCB900CAUVMC69BQPRD17XHOWCH6Q8E5K6ZIGXR?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to sign in and open the Shield check for the provided address.\nThe Shield page opened with AdaK9zXw2LmQ8rTvB3nYc7HsP4kJe6FgD1oWu5Ra2Fx filled into the address field.\nThe check completed and marked the address as “Blocked,” with a warning that it looks like Ada’s saved address but is not.",
+      "duration": 50.2,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BSXPPPQWGEVWBEZN0YHJ4/dashboard/share/US_8NOQ20AKV0GNEDFI3INTC0CUZZ2GKMDQHPDWPB3N7IJ8MQZH1FOKKTP37GCF8UIB?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -188,12 +201,12 @@
       "device": "web",
       "deviceName": "Desktop Chrome",
       "log": "10_shield_evm_lookalike.ndjson",
-      "status": "passed",
-      "summary": "You asked to sign in, open the Shield address-checking page, and check the provided wallet address.\nThe address was entered and checked on the Shield page.\nThe result marked the address as “Blocked,” identified it as both an Ethereum and Base address, and warned that it resembles Ada (Base)’s saved address but is not the same address.",
-      "duration": 59.2,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89B9G7S1NXET53XTDPBMQV0/dashboard/share/US_O8UU5322O4FO6KMGQUSX27F31MKY9M24D3A1A99TPDROEU2RLXEFYO6MYO19K1GJ?type=summary&agentView=true&fqdn=summary-page",
+      "status": "failed",
+      "summary": "The supplied address has only 39 characters after “0x”, while Ethereum and Base addresses require 40. The application therefore showed an invalid-address block message, so the expected saved-address look-alike result could not appear.\nCorrect the test fixture to a complete 40-character Ethereum/Base address that is configured as Ada (Base)’s look-alike, then rerun the assertions.",
+      "duration": 77.4,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BT08WFQKM1J73F5QK4TV8/dashboard/share/US_RPE3IKH8X3RGYFLDEVRKZ1628CMSV39K0FPNPMOKJ177KIKOWHMOOFQUBKHUJ290?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
-      "failedStep": null
+      "failedStep": 10
     },
     {
       "name": "Shield blocks a look-alike of a saved Ethereum and Base address",
@@ -202,9 +215,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "10_shield_evm_lookalike.phone.ndjson",
       "status": "passed",
-      "summary": "The requested sign-in action was completed, then the address-check page was opened.\nThe address 0x7a3f9cE5b801Dd3fA7426C9e0B1f8a5d3e27c4b9 was entered and checked.\nThe result marked the address as “Blocked,” identified it as looking like Ada (Base)’s saved address but not matching it, and showed both Ethereum and Base labels.",
-      "duration": 77.3,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BAJARXE92XKCQYBT8R27B/dashboard/share/US_KFS255R2MJNJBASYA3KJA45ZJXBNNDWJXHCD5XLDSZ25U4C7JJH2ZJVCABXI80W6?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "You asked to sign in and check the address 0x7a3f9cE5b801Dd3fA7426C9e0B1f8a5d3e27c4b9 in Shield.\nThe Shield page was opened, the address was entered, and the address check was run.\nThe result marked the address as Blocked, labelled it as both an Ethereum and Base address, and warned that it looks like Ada (Base)’s saved address but is not.",
+      "duration": 56,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BTPYRYTBTMPWAJP9966PH/dashboard/share/US_Q0G923OO34ETPTZ5EONIVORILR4G6LGKX9UIG4FMBZ2V4CE50BLR9VMMEIGSVHXT?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -215,9 +228,9 @@
       "deviceName": "Desktop Chrome",
       "log": "11_android_install.ndjson",
       "status": "passed",
-      "summary": "Opened the requested Mlyfo web manifest page.\nThe Mlyfo page included the “Mlyfo on your Android phone” heading, a “Download the keyboard” button, and Chrome installation guidance.\nThe page also displayed its privacy statements and a SHA-256 download fingerprint.\nThe web manifest confirmed the app name is “Mlyfo” and its display mode is “standalone”.",
-      "duration": 64.8,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BB9TVKYP5553YY7B3MDDB/dashboard/share/US_S9FE5R37ZZJ914Z47P71TJL25J1T0J12BYX0XWYI15UOWFUYQ6D3EM2NNXFD0YKB?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Opened the Mlyfo web manifest page as requested.\nConfirmed the page provides the Android keyboard download option, Chrome installation guidance, and the stated privacy and permission information.\nConfirmed the download-check section includes a SHA-256 fingerprint.\nConfirmed the manifest lists the app name as “Mlyfo” with display mode “standalone”.",
+      "duration": 64.6,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BTQ1SHCR2FFQJS5SF4330/dashboard/share/US_SX9CDYX4BLGURPWGEFDS3E4786UFTCE1ZWOGZMN5OR8LCWSBM8YU2BFLJ1UCFT5L?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     },
@@ -228,9 +241,9 @@
       "deviceName": "iPhone 15 (Safari)",
       "log": "11_android_install.phone.ndjson",
       "status": "passed",
-      "summary": "Opened the Mlyfo web manifest and confirmed that the app is named “Mlyfo” with a standalone display mode.\nViewed the Mlyfo Android page, which includes a “Download the keyboard” button and Chrome installation guidance.\nConfirmed the page’s safety information: internet is the keyboard’s only permission, keystrokes never leave the phone, and a SHA-256 download fingerprint is provided.\nThe requested information was successfully reached and verified.",
-      "duration": 68,
-      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BBNC3VT9TFPYXEF18RMCG/dashboard/share/US_UJIHTWV69VDF28MNRERAPK81JDEZY143AAZX65UBAZZECJF3KMPSI15UH5SNVXRL?type=summary&agentView=true&fqdn=summary-page",
+      "summary": "Opened the requested Mlyfo manifest page.\nConfirmed that the displayed manifest lists the app name as “Mlyfo” and its display mode as “standalone”.\nThe requested page loaded successfully at the specified address.",
+      "duration": 66.6,
+      "testUrl": "https://test-manager.lambdatest.com/projects/01M7RPWRYRC7N2CXMGYPCKSMTF/test-cases/01M89BVPX3JFRE3E1CR7VGQSC2/dashboard/share/US_XALXQFK3GORHE00F6OIFR8AFEWLBAPMX5N4HBRI1P14REB6J013TCF7VHS8L05RZ?type=summary&agentView=true&fqdn=summary-page",
       "attempt": 1,
       "failedStep": null
     }
@@ -238,7 +251,9 @@
   "loop": [
     {
       "attempt": 1,
-      "failed": []
+      "failed": [
+        "10_shield_evm_lookalike_test.md"
+      ]
     }
   ]
 }
