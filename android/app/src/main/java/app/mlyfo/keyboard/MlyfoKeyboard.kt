@@ -248,7 +248,7 @@ class MlyfoKeyboard : InputMethodService() {
         keys.removeAllViews()
         if (symbols) {
             row("1234567890".map { letter(it.toString()) })
-            row("@#$_&-+()/".map { letter(it.toString()) })
+            row("@#\$_&-+()/".map { letter(it.toString()) })
             row(listOf(fn("=") { type("=") }) + "*\"':;!?".map { letter(it.toString()) } + listOf(backspace()))
             row(listOf(fn("ABC", 1.5f) { symbols = false; renderKeys() }, letter(","), space(), letter("."), enter()))
         } else {
