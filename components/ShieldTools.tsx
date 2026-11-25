@@ -61,11 +61,11 @@ export function LinkScan({ enabled }: { enabled: boolean }) {
       </form>
       <div className="sub" style={{ marginTop: 8 }}>No link handy? <button type="button" className="linkish" onClick={() => setUrl(SAMPLE)}>Use our test scam page</button></div>
       {res && (
-        <div style={{ marginTop: 14 }} data-testid="link-result">
+        <div style={{ marginTop: 14 }} data-testid="link-result" role="status" aria-live="polite" aria-label="Link scan result">
           <span className={`verdict ${res.verdict}`}>{res.verdict === "safe" ? "Safe" : res.verdict === "risky" ? "Risky" : "Dangerous"}</span>
           {res.source === "kane" && <span className="kane-badge" style={{ marginLeft: 10 }}>Opened by Kane in a real browser</span>}
           {res.source === "kane-recorded" && <span className="kane-badge" style={{ marginLeft: 10 }}>Recorded by Kane in a real browser, {new Date(res.recordedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>}
-          <ul className="reasons">{res.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
+          <ul className="reasons" aria-label="Why">{res.reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
           {res.source === "kane-recorded" && <div className="sub" style={{ marginTop: 8 }}>Kane can’t open pages on this server, so this is the scan Kane recorded of the same link.</div>}
           {res.kaneError && <div className="sub" style={{ marginTop: 8 }}>Kane can’t open pages on this server, so this is the quick check. Try a deep scan on <button type="button" className="linkish" onClick={() => setUrl(SAMPLE)}>our test scam page</button> to see a scan Kane recorded.</div>}
           {res.testUrl && <a className="sub" href={res.testUrl} target="_blank" rel="noreferrer" style={{ color: "var(--teal-ink)" }}>See Kane’s evidence</a>}

@@ -12,5 +12,5 @@ Click "Create account"
 Go to {{baseUrl}}/app/shield
 Type "https://phantorn-airdrop.app/claim" into the link field that shows "https://…"
 Click "Quick check"
-Assert the result shows "Dangerous"
-Assert the reasons mention that the address imitates phantom
+Assert the link scan result shows "Dangerous"
+Assert the reasons listed in the link scan result mention that the address imitates phantom
