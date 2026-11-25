@@ -54,16 +54,26 @@ async function waitFor(url, ms = 15000) {
 
 export async function startPhone({ chrome = process.env.KANE_CLI_CHROME_PATH, log = () => {} } = {}) {
   if (!chrome) throw new Error("Set KANE_CLI_CHROME_PATH to a Chrome or headless_shell binary (source scripts/kane-env.sh).");
-  const chromePort = await freePort();
   const relayPort = await freePort();
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), "mlyfo-phone-"));
-  const proc = spawn(chrome, [
-    "--headless", "--no-sandbox", `--remote-debugging-port=${chromePort}`, `--user-data-dir=${profile}`,
-    `--window-size=${PHONE.width},${PHONE.height}`, "--touch-events=enabled", `--user-agent=${PHONE.ua}`,
-    "--no-first-run", "--no-default-browser-check", "about:blank",
-  ], { stdio: "ignore" });
-  const upstream = `127.0.0.1:${chromePort}`;
-  await waitFor(`http://${upstream}/json/version`);
+  // A busy CI machine sometimes loses the race for the port or starts Chrome slowly: try up to 3 times.
+  let proc, upstream;
+  for (let attempt = 1; ; attempt++) {
+    const chromePort = await freePort();
+    proc = spawn(chrome, [
+      "--headless", "--no-sandbox", `--remote-debugging-port=${chromePort}`, `--user-data-dir=${profile}`,
+      `--window-size=${PHONE.width},${PHONE.height}`, "--touch-events=enabled", `--user-agent=${PHONE.ua}`,
+      "--no-first-run", "--no-default-browser-check", "about:blank",
+    ], { stdio: "ignore" });
+    upstream = `127.0.0.1:${chromePort}`;
+    try { await waitFor(`http://${upstream}/json/version`, 30000); break; }
+    catch (e) {
+      try { proc.kill("SIGKILL"); } catch {}
+      if (attempt === 3) throw e;
+      log(`Phone browser didn’t start, retrying (${attempt}/3)`);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
 
   // HTTP discovery (/json/version, /json/list …): forward, pointing websocket URLs at the relay.
   const server = http.createServer(async (req, res) => {
