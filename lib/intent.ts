@@ -25,6 +25,12 @@ export function parseIntent(text: string): Intent {
     const people = handles.length ? handles.length + 1 : Number(m[2] || 2);
     return { kind: "split", totalCents: money(m[1]), people, names: handles };
   }
+  // "split bill with kabir @ $50", "split the bill with @ada and @kabir for $90"
+  m = t.match(/split(?:\s+(?:the|this|our))?(?:\s+bill)?\s+(?:with|between)\s+(.+?)\s*(?:@|for|of|:)?\s*\$\s?([\d,.]+)/i);
+  if (m) {
+    const names = m[1].split(/\s*(?:,|&|\band\b)\s*|\s+/i).map((x) => x.replace(/^@/, "").toLowerCase()).filter((x) => /^[a-z0-9_]{2,20}$/.test(x) && x !== "me");
+    if (names.length) return { kind: "split", totalCents: money(m[2]), people: names.length + 1, names };
+  }
   m = t.match(/\$([\d,.]+)\s+for\s+(\d+)\s+of\s+us/i);
   if (m) return { kind: "split", totalCents: money(m[1]), people: Number(m[2]), names: [] };
 

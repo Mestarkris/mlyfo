@@ -1066,3 +1066,21 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em}
 .heal-box>summary:focus-visible{outline:2px solid var(--teal-ink, currentColor);outline-offset:4px;border-radius:6px}
 .linkish{background:none;border:0;padding:0;font:inherit;color:var(--teal-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .linkish:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:4px}
+
+/* /android: the app install and the keyboard download */
+.dl-hero{padding:150px 0 48px}
+.dl-hero h1{font-size:clamp(40px,6vw,80px);font-weight:500;letter-spacing:-.045em;line-height:1.02;max-width:14ch;text-wrap:balance}
+.dl-hero .lede{font-size:clamp(18px,2vw,24px);color:var(--slate);max-width:44ch;margin-top:20px;letter-spacing:-.015em}
+.dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.dl-card{padding:32px;border-radius:24px;display:grid;gap:16px;justify-items:start}
+.dl-card h2{font-size:28px;font-weight:500;letter-spacing:-.03em}
+.dl-card h2 small{font-size:13px;font-weight:500;color:#9DA7FF;border:1px solid currentColor;border-radius:6px;padding:2px 7px;vertical-align:5px;margin-left:6px;letter-spacing:0}
+.dl-card p{color:var(--slate)}
+.dl-step{font-family:var(--font-mono),ui-monospace,monospace;font-size:14px;color:#9DA7FF}
+.dl-note{font-size:14px;color:var(--mute)}
+.dl-steps{display:grid;gap:10px;padding-left:20px;color:var(--slate);font-size:15px;margin-top:4px}
+.dl-print{margin-top:24px;padding:24px 28px;border-radius:20px;display:grid;gap:10px}
+.dl-print code{font-family:var(--font-mono),ui-monospace,monospace;font-size:13px;word-break:break-all;color:var(--ink)}
+.dl-print p{color:var(--slate)}
+.landing #safe .sec-grid a,.dl-print a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:960px){.dl-grid{grid-template-columns:1fr}.dl-hero{padding:120px 0 32px}.dl-card{padding:24px}}

@@ -30,7 +30,7 @@ export default async function Home() {
     <div className="landing">
       <header className="nav"><div className="wrap">
         <Logo />
-        <nav className="nav-links"><a href="#features">Features</a><a href="#security">Security</a><a href="#verified">Verified with Kane</a></nav>
+        <nav className="nav-links"><a href="#features">Features</a><a href="#security">Security</a><a href="#verified">Verified with Kane</a><Link href="/android">Android</Link></nav>
         <div className="nav-cta">
           {user ? <Link className="btn btn-light btn-sm" href="/app">Dashboard</Link> : (<>
             <Link className="nav-link" href="/signin">Sign in</Link>
@@ -121,7 +121,7 @@ export default async function Home() {
         </div></section>
       </main>
 
-      <footer><div className="wrap"><span>© 2026 Mlyfo</span><a href="#">Privacy</a><a href="#">Terms</a><a href="#security">Security</a><a href="https://github.com/Mestarkris/mlyfo">GitHub</a></div></footer>
+      <footer><div className="wrap"><span>© 2026 Mlyfo</span><Link href="/android">Get it on Android</Link><a href="#">Privacy</a><a href="#">Terms</a><a href="#security">Security</a><a href="https://github.com/Mestarkris/mlyfo">GitHub</a></div></footer>
     </div>
   );
 }
